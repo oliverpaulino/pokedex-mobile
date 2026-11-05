@@ -43,6 +43,7 @@ dependencies:
   riverpod_annotation: ^4.0.7
   graphql_flutter: ^5.3.0
   connectivity_plus: ^7.3.2
+  drift_flutter: ^0.3.1
 
 dev_dependencies:
   flutter_test:
