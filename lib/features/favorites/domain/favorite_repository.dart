@@ -1,4 +1,3 @@
-
 abstract class FavoriteRepository {
   Stream<List<int>> watchFavorites();
 

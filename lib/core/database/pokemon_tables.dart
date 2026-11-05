@@ -1,29 +1,22 @@
-
 import 'package:drift/drift.dart';
 
 // 1. Tabla de Pokemon
-@TableIndex(
-  name: 'pokemon_name_index',
-  columns: {#name},
-)
+@TableIndex(name: 'pokemon_name_index', columns: {#name})
 class Pokemons extends Table {
   @override
   String get tableName => 'pokemon';
 
   IntColumn get id => integer()();
 
-  IntColumn get nationalDexNumber =>
-      integer().unique()();
+  IntColumn get nationalDexNumber => integer().unique()();
 
   TextColumn get name => text()();
 
   TextColumn get imageUrl => text().nullable()();
 
-  TextColumn get artworkLocalPath =>
-      text().nullable()();
+  TextColumn get artworkLocalPath => text().nullable()();
 
-  DateTimeColumn get updatedAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -47,19 +40,14 @@ class PokemonTypes extends Table {
   @override
   String get tableName => 'pokemon_type';
 
-  IntColumn get pokemonId =>
-      integer().references(Pokemons, #id)();
+  IntColumn get pokemonId => integer().references(Pokemons, #id)();
 
-  IntColumn get typeId =>
-      integer().references(Types, #id)();
+  IntColumn get typeId => integer().references(Types, #id)();
 
   IntColumn get slot => integer()();
 
   @override
-  Set<Column> get primaryKey => {
-    pokemonId,
-    typeId,
-  };
+  Set<Column> get primaryKey => {pokemonId, typeId};
 
   @override
   List<Set<Column>> get uniqueKeys => [
@@ -72,11 +60,9 @@ class Favorites extends Table {
   @override
   String get tableName => 'favorite';
 
-  IntColumn get pokemonId =>
-      integer().references(Pokemons, #id)();
+  IntColumn get pokemonId => integer().references(Pokemons, #id)();
 
-  DateTimeColumn get createdAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {pokemonId};
@@ -89,16 +75,11 @@ class SyncMetadata extends Table {
 
   TextColumn get resourceKey => text()();
 
-  DateTimeColumn get lastSuccessAt =>
-      dateTime().nullable()();
+  DateTimeColumn get lastSuccessAt => dateTime().nullable()();
 
-  TextColumn get status =>
-      text().withDefault(
-        const Constant('pending'),
-      )();
+  TextColumn get status => text().withDefault(const Constant('pending'))();
 
-  TextColumn get cursorOrOffset =>
-      text().nullable()();
+  TextColumn get cursorOrOffset => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {resourceKey};
