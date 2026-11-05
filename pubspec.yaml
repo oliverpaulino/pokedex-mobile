@@ -14,8 +14,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
 
   # Persistencia local (Drift y SQLite)
-  drift: ^2.20.0
-  sqlite3_flutter_libs: ^0.5.20
+  drift: 2.35.3
   path_provider: ^2.1.4
   path: ^1.9.0
 
@@ -33,6 +32,7 @@ dependencies:
   cached_network_image: ^3.4.1
   flutter_localizations:
     sdk: flutter
+  drift_flutter: 0.3.1
 
 dev_dependencies:
   flutter_test:
@@ -40,6 +40,6 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
   # Generación de código para Drift y Ferry
-  drift_dev: ^2.20.0
+  drift_dev: 2.35.2
   ferry_generator: ^0.12.0+6
-  build_runner: ^2.4.13
+  build_runner: 2.16.2
