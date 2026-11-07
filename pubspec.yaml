@@ -11,7 +11,7 @@ dependencies:
     sdk: flutter
 
   # Gestión de estado e Inyección de dependencias
-  flutter_riverpod: ^2.6.1
+  flutter_riverpod: ^3.5.0
 
   # Persistencia local (Drift y SQLite)
   drift: 2.35.3
@@ -21,15 +21,16 @@ dependencies:
   # Cliente GraphQL con Ferry
   ferry: ^0.16.1+2
   ferry_flutter: ^0.9.1+1
+  gql_http_link: ^1.2.0
 
   # Monitoreo de conectividad
-  connectivity_plus: ^6.1.0
+  connectivity_plus: ^7.3.2
 
   # Enrutamiento declarativo
-  go_router: ^14.6.0
+  go_router: ^18.1.3
 
   # Caché de imágenes offline
-  cached_network_image: ^3.4.1
+  cached_network_image: ^4.0.6
   flutter_localizations:
     sdk: flutter
   drift_flutter: 0.3.1
@@ -37,7 +38,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
   # Generación de código para Drift y Ferry
   drift_dev: 2.35.2
