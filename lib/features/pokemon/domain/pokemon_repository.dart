@@ -1,7 +1,9 @@
 import 'entities.dart';
 
 abstract class PokemonRepository {
-  Stream<List<Pokemon>> watchPokemon({String search = ''});
+  Stream<List<Pokemon>> watchPokemon({
+    String search = '',
+  });
 
   Future<Pokemon?> getPokemon(int id);
 
