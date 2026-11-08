@@ -1,11 +1,10 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
-import '../../favorites/domain/entities.dart';
+import '../domain/entities.dart';
 
 // Los cuatro estados posibles del catalogo.
-enum CatalogStatus {
+enum CatalogoStatus {
   loading,
   success,
   empty,
@@ -13,12 +12,12 @@ enum CatalogStatus {
 }
 
 // Informacion que necesita la pantalla del catalogo.
-class CatalogState {
-  final CatalogStatus status;
+class CatalogoState {
+  final CatalogoStatus status;
   final List<Pokemon> pokemons;
   final String? message;
 
-  const CatalogState({
+  const CatalogoState({
     required this.status,
     this.pokemons = const [],
     this.message,
@@ -26,9 +25,9 @@ class CatalogState {
 }
 
 // Escucha los Pokemon directamente desde el repositorio local.
-final catalogStreamProvider =
-StreamProvider.autoDispose.family<List<Pokemon>, String>(
-      (ref, search) {
+final catalogoStreamProvider =
+    StreamProvider.autoDispose.family<List<Pokemon>, String>(
+  (ref, search) {
     final repository = ref.watch(pokemonRepositoryProvider);
 
     return repository.watchPokemon(
@@ -38,38 +37,35 @@ StreamProvider.autoDispose.family<List<Pokemon>, String>(
 );
 
 // Transforma el resultado de Riverpod en un estado sencillo.
-final catalogStateProvider =
-Provider.autoDispose.family<CatalogState, String>(
-      (ref, search) {
-    final result = ref.watch(catalogStreamProvider(search));
+final catalogoStateProvider =
+    Provider.autoDispose.family<CatalogoState, String>(
+  (ref, search) {
+    final result = ref.watch(catalogoStreamProvider(search));
 
     return result.when(
       loading: () {
-        return const CatalogState(
-          status: CatalogStatus.loading,
+        return const CatalogoState(
+          status: CatalogoStatus.loading,
         );
       },
-
       data: (pokemons) {
         if (pokemons.isEmpty) {
-          return const CatalogState(
-            status: CatalogStatus.empty,
+          return const CatalogoState(
+            status: CatalogoStatus.empty,
           );
         }
 
-        return CatalogState(
-          status: CatalogStatus.success,
+        return CatalogoState(
+          status: CatalogoStatus.success,
           pokemons: pokemons,
         );
       },
-
       error: (error, stackTrace) {
-        return const CatalogState(
-          status: CatalogStatus.error,
+        return const CatalogoState(
+          status: CatalogoStatus.error,
           message: 'No se pudo cargar el catalogo.',
         );
       },
-
       skipLoadingOnRefresh: false,
       skipLoadingOnReload: false,
     );
