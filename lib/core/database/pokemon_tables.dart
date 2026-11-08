@@ -51,8 +51,8 @@ class PokemonTypes extends Table {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-    {pokemonId, slot},
-  ];
+        {pokemonId, slot},
+      ];
 }
 
 // 4. Tabla de favoritos
