@@ -61,9 +61,11 @@ final catalogoStateProvider =
         );
       },
       error: (error, stackTrace) {
+        print('ERROR REAL DEL CATALOGO: $error');
+
         return const CatalogoState(
           status: CatalogoStatus.error,
-          message: 'No se pudo cargar el catalogo.',
+          message: 'No se pudo cargar el catálogo.',
         );
       },
       skipLoadingOnRefresh: false,
