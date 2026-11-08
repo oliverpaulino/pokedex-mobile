@@ -46,6 +46,7 @@ void main() {
 
   ProviderContainer crearContenedor(FakePokemonRepository repo) {
     return ProviderContainer.test(
+      retry: (retryCount, error) => null,
       overrides: [
         pokemonRepositoryProvider.overrideWith(
               (ref) => repo,

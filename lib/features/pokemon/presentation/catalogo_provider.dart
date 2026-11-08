@@ -26,14 +26,15 @@ class CatalogoState {
 
 // Escucha los Pokemon directamente desde el repositorio local.
 final catalogoStreamProvider =
-    StreamProvider.autoDispose.family<List<Pokemon>, String>(
-  (ref, search) {
+StreamProvider.autoDispose.family<List<Pokemon>, String>(
+      (ref, search) {
     final repository = ref.watch(pokemonRepositoryProvider);
 
     return repository.watchPokemon(
       search: search.trim(),
     );
   },
+  retry: (retryCount, error) => null,
 );
 
 // Transforma el resultado de Riverpod en un estado sencillo.
