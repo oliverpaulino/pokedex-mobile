@@ -16,6 +16,10 @@ class GraphqlFailure extends AppFailure {
   const GraphqlFailure(super.message);
 }
 
+class PartialResponseFailure extends GraphqlFailure {
+  const PartialResponseFailure(super.message);
+}
+
 class RateLimitFailure extends AppFailure {
   const RateLimitFailure() : super('Demasiadas solicitudes');
 }

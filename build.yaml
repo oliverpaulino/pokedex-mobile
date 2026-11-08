@@ -1,0 +1,14 @@
+targets:
+  $default:
+    sources:
+      - lib/**
+      - graphql/**
+    builders:
+      ferry_generator|graphql_builder:
+        enabled: true
+        options:
+          schema: pokedex|lib/graphql/schema.graphql
+      ferry_generator|serializer_builder:
+        enabled: true
+        options:
+          schema: pokedex|lib/graphql/schema.graphql
