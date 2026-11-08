@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
@@ -26,8 +27,8 @@ class CatalogoState {
 
 // Escucha los Pokemon directamente desde el repositorio local.
 final catalogoStreamProvider =
-StreamProvider.autoDispose.family<List<Pokemon>, String>(
-      (ref, search) {
+    StreamProvider.autoDispose.family<List<Pokemon>, String>(
+  (ref, search) {
     final repository = ref.watch(pokemonRepositoryProvider);
 
     return repository.watchPokemon(
@@ -62,7 +63,7 @@ final catalogoStateProvider =
         );
       },
       error: (error, stackTrace) {
-        print('ERROR REAL DEL CATALOGO: $error');
+        debugPrint('ERROR REAL DEL CATALOGO: $error');
 
         return const CatalogoState(
           status: CatalogoStatus.error,
