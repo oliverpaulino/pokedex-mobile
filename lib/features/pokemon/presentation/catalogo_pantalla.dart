@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'catalogo_provider.dart';
 
 class CatalogoPantalla extends ConsumerStatefulWidget {
@@ -71,17 +71,16 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
                 width: 60,
                 height: 60,
                 child: pokemon.imageUrl != null && pokemon.imageUrl!.isNotEmpty
-                    ? Image.network(
-                        pokemon.imageUrl!,
-                        errorBuilder: (context, error, stack) {
-                          return const Icon(
-                            Icons.catching_pokemon,
-                          );
-                        },
+                    ? CachedNetworkImage(
+                        imageUrl: pokemon.imageUrl!,
+                        fit: BoxFit.contain,
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.catching_pokemon),
                       )
-                    : const Icon(
-                        Icons.catching_pokemon,
-                      ),
+                    : const Icon(Icons.catching_pokemon),
               ),
               title: Text(
                 pokemon.name,
