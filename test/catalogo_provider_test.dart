@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,7 +48,7 @@ void main() {
       retry: (retryCount, error) => null,
       overrides: [
         pokemonRepositoryProvider.overrideWith(
-              (ref) => repo,
+          (ref) => repo,
         ),
       ],
     );
@@ -58,7 +57,7 @@ void main() {
   void escuchar(ProviderContainer container, String search) {
     final subscription = container.listen(
       catalogoStateProvider(search),
-          (previous, next) {},
+      (previous, next) {},
     );
 
     addTearDown(subscription.close);
@@ -69,7 +68,7 @@ void main() {
     addTearDown(controller.close);
 
     final repo = FakePokemonRepository(
-          (_) => controller.stream,
+      (_) => controller.stream,
     );
 
     final container = crearContenedor(repo);
@@ -83,7 +82,7 @@ void main() {
 
   test('2. Muestra estado vacio', () async {
     final repo = FakePokemonRepository(
-          (_) => Stream.value(<Pokemon>[]),
+      (_) => Stream.value(<Pokemon>[]),
     );
 
     final container = crearContenedor(repo);
@@ -100,7 +99,7 @@ void main() {
 
   test('3. Muestra los Pokemon existentes', () async {
     final repo = FakePokemonRepository(
-          (_) => Stream.value([pikachu]),
+      (_) => Stream.value([pikachu]),
     );
 
     final container = crearContenedor(repo);
@@ -118,7 +117,7 @@ void main() {
 
   test('4. Muestra error cuando falla la lectura', () async {
     final repo = FakePokemonRepository(
-          (_) => Stream<List<Pokemon>>.error(
+      (_) => Stream<List<Pokemon>>.error(
         Exception('Error de SQLite'),
       ),
     );
@@ -141,7 +140,7 @@ void main() {
 
   test('5. Envia la busqueda al repositorio', () async {
     final repo = FakePokemonRepository(
-          (_) => Stream.value([pikachu]),
+      (_) => Stream.value([pikachu]),
     );
 
     final container = crearContenedor(repo);
@@ -206,14 +205,13 @@ void main() {
     addTearDown(controller.close);
 
     final repo = FakePokemonRepository(
-          (_) => controller.stream,
+      (_) => controller.stream,
     );
 
     final container = crearContenedor(repo);
     escuchar(container, '');
 
-    final primeraLectura =
-    container.read(catalogoStreamProvider('').future);
+    final primeraLectura = container.read(catalogoStreamProvider('').future);
 
     // Inicialmente no hay Pokemon.
     controller.add([]);

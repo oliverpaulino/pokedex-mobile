@@ -13,12 +13,14 @@ class PokemonMapper {
       number: dto.id,
       name: dto.name,
       imageUrl: dto.preferredImageUrl,
-      types: dto.types.map(
+      types: dto.types
+          .map(
             (type) => PokemonType(
               id: type.id,
               name: type.name,
             ),
-      ).toList(growable: false),
+          )
+          .toList(growable: false),
     );
   }
 
