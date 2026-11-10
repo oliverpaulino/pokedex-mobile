@@ -9,7 +9,20 @@ import '../graphql/__generated__/pokemon_catalog.data.gql.dart';
 import '../graphql/__generated__/pokemon_catalog.req.gql.dart';
 import '../graphql/__generated__/pokemon_catalog.var.gql.dart';
 
-class PokemonRemoteDataSource {
+/// Contrato de la fuente remota del catalogo.
+/// Permite sustituir Ferry por un fake en las pruebas del coordinador de
+/// sincronizacion.
+abstract interface class PokemonCatalogRemoteDataSource {
+  Future<PokemonCatalogDto> fetchCatalog({
+    required int limit,
+    required int offset,
+  });
+}
+
+/// Fuente de datos remota para el catalogo de Pokemon.
+/// Toda llamada usa un timeout explicito ([graphqlRequestTimeout]) y traduce
+/// los errores de infraestructura a fallos del dominio.
+class PokemonRemoteDataSource implements PokemonCatalogRemoteDataSource {
   final Client client;
   final Duration timeout;
 
@@ -18,6 +31,7 @@ class PokemonRemoteDataSource {
     this.timeout = graphqlRequestTimeout,
   });
 
+  @override
   Future<PokemonCatalogDto> fetchCatalog({
     required int limit,
     required int offset,
@@ -33,7 +47,6 @@ class PokemonRemoteDataSource {
       (builder) => builder
         ..vars.limit = limit
         ..vars.offset = offset
-        // El data source remoto debe consultar la API, no el cache de Ferry.
         ..fetchPolicy = FetchPolicy.NetworkOnly,
     );
 
@@ -76,7 +89,6 @@ class PokemonRemoteDataSource {
 
       final message = graphqlErrors.map((error) => error.message).join(' | ');
 
-      // RNF-RES-05: una respuesta parcial se reporta de forma diferenciada.
       if (response.data != null) {
         throw PartialResponseFailure('Respuesta parcial: $message');
       }
@@ -101,7 +113,6 @@ class PokemonRemoteDataSource {
         return const RateLimitFailure();
       }
       if (exception.statusCode == null) {
-        // gql_http_link envuelve fallos de red sin status en ServerException.
         return const NetworkFailure();
       }
 
