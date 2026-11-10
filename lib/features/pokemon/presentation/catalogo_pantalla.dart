@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:pokedex/features/pokemon/data/sync/catalog_sync_provider.dart';
+import 'package:pokedex/features/pokemon/domain/catalog_sync.dart';
 import 'catalogo_provider.dart';
 
 class CatalogoPantalla extends ConsumerStatefulWidget {
@@ -28,13 +30,42 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
       // 2. Estado vacio
     } else if (estado.status == CatalogoStatus.empty) {
       contenido = Center(
-        child: Text(
-          busqueda.isEmpty
-              ? 'Todavía no hay Pokémon guardados'
-              : 'No se encontraron Pokémon',
-        ),
-      );
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                busqueda.isEmpty
+                    ? 'Todavía no hay Pokémon guardados'
+                    : 'No se encontraron Pokémon',
+              ),
 
+              if (busqueda.isEmpty) ...[
+                const SizedBox(height: 12),
+
+                ElevatedButton(
+                  onPressed: () async {
+                    final resultado = await ref
+                        .read(catalogSyncCoordinatorProvider)
+                        .syncInitialCatalog();
+
+                    if (!mounted) return;
+
+                    if (resultado is CatalogSyncFailed) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'No se pudo sincronizar. Revisa tu conexión.',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('Reintentar descarga'),
+                ),
+              ],
+            ],
+          ),
+      );
       // 3. Estado de error
     } else if (estado.status == CatalogoStatus.error) {
       contenido = Center(
