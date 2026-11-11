@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
@@ -34,6 +35,7 @@ final catalogoStreamProvider =
       search: search.trim(),
     );
   },
+  retry: (retryCount, error) => null,
 );
 
 // Transforma el resultado de Riverpod en un estado sencillo.
@@ -61,9 +63,11 @@ final catalogoStateProvider =
         );
       },
       error: (error, stackTrace) {
+        debugPrint('ERROR REAL DEL CATALOGO: $error');
+
         return const CatalogoState(
           status: CatalogoStatus.error,
-          message: 'No se pudo cargar el catalogo.',
+          message: 'No se pudo cargar el catálogo.',
         );
       },
       skipLoadingOnRefresh: false,

@@ -44,6 +44,10 @@ dev_dependencies:
   drift_dev: 2.35.2
   ferry_generator: ^0.12.0+6
   build_runner: 2.16.2
-
-  # Estructuras de datos fundamentales para representar operaciones y respuestas GraphQL.
   gql_exec: ^1.1.0
+#  gql_exec: ^1.1.1-alpha+1699813812660
+flutter:
+  uses-material-design: true
+
+# Estructuras de datos fundamentales para representar operaciones y respuestas GraphQL.
+

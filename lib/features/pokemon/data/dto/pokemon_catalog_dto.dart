@@ -11,9 +11,8 @@ class PokemonCatalogDto {
 
   factory PokemonCatalogDto.fromGraphql(GPokemonCatalogData data) {
     return PokemonCatalogDto(
-      pokemons: data.pokemon
-          .map(PokemonDto.fromGraphql)
-          .toList(growable: false),
+      pokemons:
+          data.pokemon.map(PokemonDto.fromGraphql).toList(growable: false),
       totalCount:
           data.pokemon_aggregate.aggregate?.count ?? data.pokemon.length,
     );

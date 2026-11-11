@@ -5,7 +5,15 @@ import 'pokemon_tables.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [Pokemons, Types, PokemonTypes, Favorites, SyncMetadata])
+@DriftDatabase(
+  tables: [
+    Pokemons,
+    Types,
+    PokemonTypes,
+    Favorites,
+    SyncMetadata,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
@@ -16,6 +24,9 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) async {
+          await m.createAll();
+        },
         beforeOpen: (details) async {
           await customStatement('PRAGMA foreign_keys = ON');
         },
