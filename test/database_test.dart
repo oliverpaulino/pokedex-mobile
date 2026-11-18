@@ -13,7 +13,7 @@ void main() {
     await db.close();
   });
 
-  test('Existen las cinco tablas', () async {
+  test('Existen las tablas del catalogo y del detalle', () async {
     final rows = await db.customSelect('''
       SELECT name FROM sqlite_master
       WHERE type = 'table'
@@ -29,26 +29,66 @@ void main() {
         'pokemon_type',
         'favorite',
         'sync_metadata',
+        'pokemon_species',
+        'pokemon_stats',
+        'ability',
+        'pokemon_ability',
+        'move',
+        'pokemon_move',
+        'evolution',
+        'type_efficacy',
+        'trivia_result',
+        'trivia_answer',
+        'app_setting',
       ]),
     );
   });
 
-  test('La base usa la version 1', () {
-    expect(db.schemaVersion, 1);
+  test('La base usa la version 2', ()  {
+    expect(db.schemaVersion, 2);
   });
 
-  test('No permite numeros duplicados', () async {
+  test('sync_metadata no tiene cursor_or_offset y conserva columnas esperadas', () async {
+    final columns = await db
+        .customSelect(
+          "PRAGMA table_info('sync_metadata')",
+        )
+        .get();
+
+    final names = columns.map((row) => row.read<String>('name')).toSet();
+
+    expect(
+      names,
+      containsAll(['resource_key', 'status', 'last_success_at']),
+    );
+    expect(names, isNot(contains('cursor_or_offset')));
+  });
+
+  test('Permite formas con el mismo numero nacional', () async {
     await db.customStatement('''
-      INSERT INTO pokemon
-        (id, national_dex_number, name)
-      VALUES (25, 25, 'Pikachu')
+      INSERT INTO pokemon (id, national_dex_number, name)
+      VALUES (52, 52, 'meowth')
+    ''');
+    await db.customStatement('''
+      INSERT INTO pokemon (id, national_dex_number, name)
+      VALUES (10152, 52, 'meowth-alola')
     ''');
 
+    final rows = await db.customSelect('''
+      SELECT id FROM pokemon WHERE national_dex_number = 52
+    ''').get();
+    expect(rows.length, 2);
+  });
+
+  test('No permite IDs duplicados', () async {
+    await db.customStatement('''
+      INSERT INTO pokemon (id, national_dex_number, name)
+      VALUES (52, 52, 'meowth')
+    ''');
     await expectLater(
       db.customStatement('''
-        INSERT INTO pokemon
-          (id, national_dex_number, name)
-        VALUES (26, 25, 'Otro Pokemon')
+        INSERT INTO pokemon (id, national_dex_number, name)
+        VALUES (52, 52, 'meowth-duplicado')
       '''),
       throwsA(isA<Exception>()),
     );

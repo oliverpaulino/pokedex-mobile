@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:pokedex/core/widgets/indicador_conectividad.dart';
-import 'package:pokedex/features/pokemon/data/sync/catalog_sync_provider.dart';
-import 'package:pokedex/features/pokemon/domain/catalog_sync.dart';
+
+import '../../../app/providers.dart';
+import '../../../core/widgets/indicador_conectividad.dart';
 import 'catalogo_provider.dart';
 
 class CatalogoPantalla extends ConsumerStatefulWidget {
@@ -15,6 +15,16 @@ class CatalogoPantalla extends ConsumerStatefulWidget {
 
 class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
   String busqueda = '';
+  bool _cargado = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!_cargado) {
+      _cargado = true;
+      Future<void>.microtask(() => ref.read(catalogLoaderProvider).load());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,24 +52,10 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
             if (busqueda.isEmpty) ...[
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () async {
-                  final resultado = await ref
-                      .read(catalogSyncCoordinatorProvider)
-                      .syncInitialCatalog();
-
-                  if (!context.mounted) return;
-
-                  if (resultado is CatalogSyncFailed) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'No se pudo sincronizar. Revisa tu conexión.',
-                        ),
-                      ),
-                    );
-                  }
+                onPressed: () {
+                  ref.invalidate(catalogoStreamProvider(busqueda));
                 },
-                child: const Text('Reintentar descarga'),
+                child: const Text('Reintentar'),
               ),
             ],
           ],
@@ -146,7 +142,7 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
         bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(52),
+          preferredSize: Size.fromHeight(64),
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: 16,

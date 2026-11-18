@@ -1,9 +1,9 @@
 import 'package:drift/drift.dart';
 
-import '../../../core/database/app_database.dart' hide Pokemon, PokemonType;
-import '../domain/entities.dart';
-import '../domain/failures.dart';
-import '../domain/pokemon_repository.dart';
+import '../../../../core/database/app_database.dart' hide Pokemon, PokemonType;
+import '../../domain/entities.dart';
+import '../../domain/failures.dart';
+import '../../domain/pokemon_repository.dart';
 
 class PokemonLocalRepository implements PokemonRepository {
   final AppDatabase db;
@@ -13,7 +13,6 @@ class PokemonLocalRepository implements PokemonRepository {
   // Validar los Pokemon recibidos.
   void validar(List<Pokemon> pokemons) {
     final ids = <int>{};
-    final numeros = <int>{};
 
     for (final pokemon in pokemons) {
       if (pokemon.id <= 0 ||
@@ -26,7 +25,7 @@ class PokemonLocalRepository implements PokemonRepository {
         );
       }
 
-      if (!ids.add(pokemon.id) || !numeros.add(pokemon.number)) {
+      if (!ids.add(pokemon.id)) {
         throw const ValidationFailure(
           'Hay Pokemon duplicados en el lote',
         );
