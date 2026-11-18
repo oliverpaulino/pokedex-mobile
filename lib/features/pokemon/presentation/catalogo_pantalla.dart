@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
+import '../../../app/providers.dart';
+import '../../../core/widgets/indicador_conectividad.dart';
 import 'catalogo_provider.dart';
 
 class CatalogoPantalla extends ConsumerStatefulWidget {
@@ -12,6 +15,16 @@ class CatalogoPantalla extends ConsumerStatefulWidget {
 
 class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
   String busqueda = '';
+  bool _cargado = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!_cargado) {
+      _cargado = true;
+      Future<void>.microtask(() => ref.read(catalogLoaderProvider).load());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,6 +141,16 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
         title: const Text('Pokédex'),
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(64),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 6,
+            ),
+            child: IndicadorConectividad(),
+          ),
+        ),
       ),
       body: Column(
         children: [
