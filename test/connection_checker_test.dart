@@ -52,7 +52,8 @@ void main() {
 
     test('devuelve serviceUnavailable ante GraphqlFailure', () async {
       final checker = ConnectionChecker(
-        remoteDataSource: FakeRemote(() async => throw const GraphqlFailure('x')),
+        remoteDataSource:
+            FakeRemote(() async => throw const GraphqlFailure('x')),
       );
 
       expect(await checker.check(), ConnectionStatus.serviceUnavailable);
@@ -60,7 +61,8 @@ void main() {
 
     test('devuelve serviceUnavailable ante RateLimitFailure', () async {
       final checker = ConnectionChecker(
-        remoteDataSource: FakeRemote(() async => throw const RateLimitFailure()),
+        remoteDataSource:
+            FakeRemote(() async => throw const RateLimitFailure()),
       );
 
       expect(await checker.check(), ConnectionStatus.serviceUnavailable);

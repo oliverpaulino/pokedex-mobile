@@ -90,7 +90,6 @@ class CatalogLoader {
           limit: pageSize,
           offset: offset,
         );
-
       } on AppFailure catch (failure) {
         final canRetry = _isRetryable(failure) && attempt < maxAttempts;
         if (!canRetry) {

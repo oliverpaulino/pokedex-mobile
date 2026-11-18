@@ -39,9 +39,11 @@ void main() {
 
   test('sync_metadata no tiene cursor_or_offset y conserva columnas esperadas',
       () async {
-    final columns = await db.customSelect(
-      "PRAGMA table_info('sync_metadata')",
-    ).get();
+    final columns = await db
+        .customSelect(
+          "PRAGMA table_info('sync_metadata')",
+        )
+        .get();
 
     final names = columns.map((row) => row.read<String>('name')).toSet();
 

@@ -16,26 +16,18 @@ class ConnectionChecker {
 
   Future<ConnectionStatus> check() async {
     try {
-      await remoteDataSource
-          .fetchCatalog(limit: 1, offset: 0)
-          .timeout(timeout);
+      await remoteDataSource.fetchCatalog(limit: 1, offset: 0).timeout(timeout);
       return ConnectionStatus.online;
-
     } on NetworkFailure {
       return ConnectionStatus.offline;
-
     } on TimeoutFailure {
       return ConnectionStatus.serviceUnavailable;
-
     } on GraphqlFailure {
       return ConnectionStatus.serviceUnavailable;
-
     } on RateLimitFailure {
       return ConnectionStatus.serviceUnavailable;
-
     } on AppFailure {
       return ConnectionStatus.serviceUnavailable;
-
     } catch (_) {
       return ConnectionStatus.serviceUnavailable;
     }
