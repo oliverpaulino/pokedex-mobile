@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import '../domain/failures.dart';
-import '../domain/pokemon_repository.dart';
-import 'catalog_load_store.dart';
-import 'dto/pokemon_catalog_dto.dart';
-import 'mappers/pokemon_mapper.dart';
-import 'remote/pokemon_remote_data_source.dart';
+import '../../domain/failures.dart';
+import '../../domain/pokemon_repository.dart';
+import '../sync/catalog_load_store.dart';
+import '../dto/pokemon_catalog_dto.dart';
+import '../mappers/pokemon_mapper.dart';
+import '../remote/pokemon_remote_data_source.dart';
 
 class CatalogLoader {
   final PokemonCatalogRemoteDataSource remoteDataSource;

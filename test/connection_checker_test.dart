@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pokedex/features/pokemon/data/connection_checker.dart';
+import 'package:pokedex/features/pokemon/data/sync/connection_checker.dart';
 import 'package:pokedex/features/pokemon/data/dto/pokemon_catalog_dto.dart';
 import 'package:pokedex/features/pokemon/data/remote/pokemon_remote_data_source.dart';
 import 'package:pokedex/features/pokemon/domain/failures.dart';

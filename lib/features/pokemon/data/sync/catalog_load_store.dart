@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
-import '../../../core/database/app_database.dart' hide Pokemon, PokemonType;
-import '../domain/catalog_load.dart';
+import '../../../../core/database/app_database.dart' hide Pokemon, PokemonType;
+import '../../domain/catalog_load.dart';
 
 const String catalogLoadResourceKey = 'pokemon_catalog';
 

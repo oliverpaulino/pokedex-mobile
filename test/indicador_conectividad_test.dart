@@ -7,11 +7,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pokedex/app/providers.dart';
 import 'package:pokedex/core/database/app_database.dart';
 import 'package:pokedex/core/widgets/indicador_conectividad.dart';
-import 'package:pokedex/features/pokemon/data/catalog_load_store.dart';
-import 'package:pokedex/features/pokemon/data/catalog_loader.dart';
-import 'package:pokedex/features/pokemon/data/connection_checker.dart';
+import 'package:pokedex/features/pokemon/data/sync/catalog_load_store.dart';
+import 'package:pokedex/features/pokemon/data/sync/catalog_loader.dart';
+import 'package:pokedex/features/pokemon/data/sync/connection_checker.dart';
 import 'package:pokedex/features/pokemon/data/dto/pokemon_catalog_dto.dart';
-import 'package:pokedex/features/pokemon/data/pokemon_local_repository.dart';
+import 'package:pokedex/features/pokemon/data/sync/pokemon_local_repository.dart';
 import 'package:pokedex/features/pokemon/data/remote/pokemon_remote_data_source.dart';
 import 'package:pokedex/features/pokemon/domain/catalog_load.dart';
 

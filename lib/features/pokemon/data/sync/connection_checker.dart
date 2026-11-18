@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import '../domain/failures.dart';
-import 'remote/pokemon_remote_data_source.dart';
+import '../../domain/failures.dart';
+import '../remote/pokemon_remote_data_source.dart';
 
 enum ConnectionStatus { checking, online, offline, serviceUnavailable }
 

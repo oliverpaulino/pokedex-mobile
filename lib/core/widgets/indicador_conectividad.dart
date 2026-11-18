@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/providers.dart';
-import '../../features/pokemon/data/connection_checker.dart';
+import '../../features/pokemon/data/sync/connection_checker.dart';
 import '../../features/pokemon/domain/catalog_load.dart';
 
 class IndicadorConectividad extends ConsumerWidget {
