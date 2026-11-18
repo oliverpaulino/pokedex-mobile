@@ -7,11 +7,23 @@ part 'app_database.g.dart';
 
 @DriftDatabase(
   tables: [
+    PokemonSpecies,
     Pokemons,
     Types,
     PokemonTypes,
+    PokemonStats,
+    Abilities,
+    PokemonAbilities,
+    Moves,
+    PokemonMoves,
+    Evolutions,
+    TypeEfficacies,
     Favorites,
+    TriviaResults,
+    TriviaAnswers,
+    AppSettings,
     SyncMetadata,
+
   ],
 )
 class AppDatabase extends _$AppDatabase {
