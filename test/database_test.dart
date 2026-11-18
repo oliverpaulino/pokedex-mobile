@@ -33,8 +33,23 @@ void main() {
     );
   });
 
-  test('La base usa la version 1', () {
-    expect(db.schemaVersion, 1);
+  test('La base usa la version 2', () {
+    expect(db.schemaVersion, 2);
+  });
+
+  test('sync_metadata no tiene cursor_or_offset y conserva columnas esperadas',
+      () async {
+    final columns = await db.customSelect(
+      "PRAGMA table_info('sync_metadata')",
+    ).get();
+
+    final names = columns.map((row) => row.read<String>('name')).toSet();
+
+    expect(
+      names,
+      containsAll(['resource_key', 'status', 'last_success_at']),
+    );
+    expect(names, isNot(contains('cursor_or_offset')));
   });
 
   test('No permite numeros duplicados', () async {

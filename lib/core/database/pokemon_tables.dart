@@ -73,13 +73,11 @@ class SyncMetadata extends Table {
   @override
   String get tableName => 'sync_metadata';
 
-  TextColumn get resourceKey => text()();
-
-  DateTimeColumn get lastSuccessAt => dateTime().nullable()();
+  TextColumn get resourceKey => text()(); // PK
 
   TextColumn get status => text().withDefault(const Constant('pending'))();
 
-  TextColumn get cursorOrOffset => text().nullable()();
+  DateTimeColumn get lastSuccessAt => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {resourceKey};

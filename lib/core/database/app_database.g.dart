@@ -953,12 +953,6 @@ class $SyncMetadataTable extends SyncMetadata
   late final GeneratedColumn<String> resourceKey = GeneratedColumn<String>(
       'resource_key', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _lastSuccessAtMeta =
-      const VerificationMeta('lastSuccessAt');
-  @override
-  late final GeneratedColumn<DateTime> lastSuccessAt =
-      GeneratedColumn<DateTime>('last_success_at', aliasedName, true,
-          type: DriftSqlType.dateTime, requiredDuringInsert: false);
   static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
@@ -966,15 +960,14 @@ class $SyncMetadataTable extends SyncMetadata
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('pending'));
-  static const VerificationMeta _cursorOrOffsetMeta =
-      const VerificationMeta('cursorOrOffset');
+  static const VerificationMeta _lastSuccessAtMeta =
+      const VerificationMeta('lastSuccessAt');
   @override
-  late final GeneratedColumn<String> cursorOrOffset = GeneratedColumn<String>(
-      'cursor_or_offset', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> lastSuccessAt =
+      GeneratedColumn<DateTime>('last_success_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns =>
-      [resourceKey, lastSuccessAt, status, cursorOrOffset];
+  List<GeneratedColumn> get $columns => [resourceKey, status, lastSuccessAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -993,21 +986,15 @@ class $SyncMetadataTable extends SyncMetadata
     } else if (isInserting) {
       context.missing(_resourceKeyMeta);
     }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    }
     if (data.containsKey('last_success_at')) {
       context.handle(
           _lastSuccessAtMeta,
           lastSuccessAt.isAcceptableOrUnknown(
               data['last_success_at']!, _lastSuccessAtMeta));
-    }
-    if (data.containsKey('status')) {
-      context.handle(_statusMeta,
-          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
-    }
-    if (data.containsKey('cursor_or_offset')) {
-      context.handle(
-          _cursorOrOffsetMeta,
-          cursorOrOffset.isAcceptableOrUnknown(
-              data['cursor_or_offset']!, _cursorOrOffsetMeta));
     }
     return context;
   }
@@ -1020,12 +1007,10 @@ class $SyncMetadataTable extends SyncMetadata
     return SyncMetadataData(
       resourceKey: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}resource_key'])!,
-      lastSuccessAt: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}last_success_at']),
       status: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
-      cursorOrOffset: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}cursor_or_offset']),
+      lastSuccessAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}last_success_at']),
     );
   }
 
@@ -1038,24 +1023,17 @@ class $SyncMetadataTable extends SyncMetadata
 class SyncMetadataData extends DataClass
     implements Insertable<SyncMetadataData> {
   final String resourceKey;
-  final DateTime? lastSuccessAt;
   final String status;
-  final String? cursorOrOffset;
+  final DateTime? lastSuccessAt;
   const SyncMetadataData(
-      {required this.resourceKey,
-      this.lastSuccessAt,
-      required this.status,
-      this.cursorOrOffset});
+      {required this.resourceKey, required this.status, this.lastSuccessAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['resource_key'] = Variable<String>(resourceKey);
+    map['status'] = Variable<String>(status);
     if (!nullToAbsent || lastSuccessAt != null) {
       map['last_success_at'] = Variable<DateTime>(lastSuccessAt);
-    }
-    map['status'] = Variable<String>(status);
-    if (!nullToAbsent || cursorOrOffset != null) {
-      map['cursor_or_offset'] = Variable<String>(cursorOrOffset);
     }
     return map;
   }
@@ -1063,13 +1041,10 @@ class SyncMetadataData extends DataClass
   SyncMetadataCompanion toCompanion(bool nullToAbsent) {
     return SyncMetadataCompanion(
       resourceKey: Value(resourceKey),
+      status: Value(status),
       lastSuccessAt: lastSuccessAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSuccessAt),
-      status: Value(status),
-      cursorOrOffset: cursorOrOffset == null && nullToAbsent
-          ? const Value.absent()
-          : Value(cursorOrOffset),
     );
   }
 
@@ -1078,9 +1053,8 @@ class SyncMetadataData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return SyncMetadataData(
       resourceKey: serializer.fromJson<String>(json['resourceKey']),
-      lastSuccessAt: serializer.fromJson<DateTime?>(json['lastSuccessAt']),
       status: serializer.fromJson<String>(json['status']),
-      cursorOrOffset: serializer.fromJson<String?>(json['cursorOrOffset']),
+      lastSuccessAt: serializer.fromJson<DateTime?>(json['lastSuccessAt']),
     );
   }
   @override
@@ -1088,36 +1062,29 @@ class SyncMetadataData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'resourceKey': serializer.toJson<String>(resourceKey),
-      'lastSuccessAt': serializer.toJson<DateTime?>(lastSuccessAt),
       'status': serializer.toJson<String>(status),
-      'cursorOrOffset': serializer.toJson<String?>(cursorOrOffset),
+      'lastSuccessAt': serializer.toJson<DateTime?>(lastSuccessAt),
     };
   }
 
   SyncMetadataData copyWith(
           {String? resourceKey,
-          Value<DateTime?> lastSuccessAt = const Value.absent(),
           String? status,
-          Value<String?> cursorOrOffset = const Value.absent()}) =>
+          Value<DateTime?> lastSuccessAt = const Value.absent()}) =>
       SyncMetadataData(
         resourceKey: resourceKey ?? this.resourceKey,
+        status: status ?? this.status,
         lastSuccessAt:
             lastSuccessAt.present ? lastSuccessAt.value : this.lastSuccessAt,
-        status: status ?? this.status,
-        cursorOrOffset:
-            cursorOrOffset.present ? cursorOrOffset.value : this.cursorOrOffset,
       );
   SyncMetadataData copyWithCompanion(SyncMetadataCompanion data) {
     return SyncMetadataData(
       resourceKey:
           data.resourceKey.present ? data.resourceKey.value : this.resourceKey,
+      status: data.status.present ? data.status.value : this.status,
       lastSuccessAt: data.lastSuccessAt.present
           ? data.lastSuccessAt.value
           : this.lastSuccessAt,
-      status: data.status.present ? data.status.value : this.status,
-      cursorOrOffset: data.cursorOrOffset.present
-          ? data.cursorOrOffset.value
-          : this.cursorOrOffset,
     );
   }
 
@@ -1125,73 +1092,63 @@ class SyncMetadataData extends DataClass
   String toString() {
     return (StringBuffer('SyncMetadataData(')
           ..write('resourceKey: $resourceKey, ')
-          ..write('lastSuccessAt: $lastSuccessAt, ')
           ..write('status: $status, ')
-          ..write('cursorOrOffset: $cursorOrOffset')
+          ..write('lastSuccessAt: $lastSuccessAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(resourceKey, lastSuccessAt, status, cursorOrOffset);
+  int get hashCode => Object.hash(resourceKey, status, lastSuccessAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is SyncMetadataData &&
           other.resourceKey == this.resourceKey &&
-          other.lastSuccessAt == this.lastSuccessAt &&
           other.status == this.status &&
-          other.cursorOrOffset == this.cursorOrOffset);
+          other.lastSuccessAt == this.lastSuccessAt);
 }
 
 class SyncMetadataCompanion extends UpdateCompanion<SyncMetadataData> {
   final Value<String> resourceKey;
-  final Value<DateTime?> lastSuccessAt;
   final Value<String> status;
-  final Value<String?> cursorOrOffset;
+  final Value<DateTime?> lastSuccessAt;
   final Value<int> rowid;
   const SyncMetadataCompanion({
     this.resourceKey = const Value.absent(),
-    this.lastSuccessAt = const Value.absent(),
     this.status = const Value.absent(),
-    this.cursorOrOffset = const Value.absent(),
+    this.lastSuccessAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SyncMetadataCompanion.insert({
     required String resourceKey,
-    this.lastSuccessAt = const Value.absent(),
     this.status = const Value.absent(),
-    this.cursorOrOffset = const Value.absent(),
+    this.lastSuccessAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : resourceKey = Value(resourceKey);
   static Insertable<SyncMetadataData> custom({
     Expression<String>? resourceKey,
-    Expression<DateTime>? lastSuccessAt,
     Expression<String>? status,
-    Expression<String>? cursorOrOffset,
+    Expression<DateTime>? lastSuccessAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (resourceKey != null) 'resource_key': resourceKey,
-      if (lastSuccessAt != null) 'last_success_at': lastSuccessAt,
       if (status != null) 'status': status,
-      if (cursorOrOffset != null) 'cursor_or_offset': cursorOrOffset,
+      if (lastSuccessAt != null) 'last_success_at': lastSuccessAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
   SyncMetadataCompanion copyWith(
       {Value<String>? resourceKey,
-      Value<DateTime?>? lastSuccessAt,
       Value<String>? status,
-      Value<String?>? cursorOrOffset,
+      Value<DateTime?>? lastSuccessAt,
       Value<int>? rowid}) {
     return SyncMetadataCompanion(
       resourceKey: resourceKey ?? this.resourceKey,
-      lastSuccessAt: lastSuccessAt ?? this.lastSuccessAt,
       status: status ?? this.status,
-      cursorOrOffset: cursorOrOffset ?? this.cursorOrOffset,
+      lastSuccessAt: lastSuccessAt ?? this.lastSuccessAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1202,14 +1159,11 @@ class SyncMetadataCompanion extends UpdateCompanion<SyncMetadataData> {
     if (resourceKey.present) {
       map['resource_key'] = Variable<String>(resourceKey.value);
     }
-    if (lastSuccessAt.present) {
-      map['last_success_at'] = Variable<DateTime>(lastSuccessAt.value);
-    }
     if (status.present) {
       map['status'] = Variable<String>(status.value);
     }
-    if (cursorOrOffset.present) {
-      map['cursor_or_offset'] = Variable<String>(cursorOrOffset.value);
+    if (lastSuccessAt.present) {
+      map['last_success_at'] = Variable<DateTime>(lastSuccessAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -1221,9 +1175,8 @@ class SyncMetadataCompanion extends UpdateCompanion<SyncMetadataData> {
   String toString() {
     return (StringBuffer('SyncMetadataCompanion(')
           ..write('resourceKey: $resourceKey, ')
-          ..write('lastSuccessAt: $lastSuccessAt, ')
           ..write('status: $status, ')
-          ..write('cursorOrOffset: $cursorOrOffset, ')
+          ..write('lastSuccessAt: $lastSuccessAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2332,17 +2285,15 @@ typedef $$FavoritesTableProcessedTableManager = ProcessedTableManager<
 typedef $$SyncMetadataTableCreateCompanionBuilder = SyncMetadataCompanion
     Function({
   required String resourceKey,
-  Value<DateTime?> lastSuccessAt,
   Value<String> status,
-  Value<String?> cursorOrOffset,
+  Value<DateTime?> lastSuccessAt,
   Value<int> rowid,
 });
 typedef $$SyncMetadataTableUpdateCompanionBuilder = SyncMetadataCompanion
     Function({
   Value<String> resourceKey,
-  Value<DateTime?> lastSuccessAt,
   Value<String> status,
-  Value<String?> cursorOrOffset,
+  Value<DateTime?> lastSuccessAt,
   Value<int> rowid,
 });
 
@@ -2358,15 +2309,11 @@ class $$SyncMetadataTableFilterComposer
   ColumnFilters<String> get resourceKey => $composableBuilder(
       column: $table.resourceKey, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get lastSuccessAt => $composableBuilder(
-      column: $table.lastSuccessAt, builder: (column) => ColumnFilters(column));
-
   ColumnFilters<String> get status => $composableBuilder(
       column: $table.status, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get cursorOrOffset => $composableBuilder(
-      column: $table.cursorOrOffset,
-      builder: (column) => ColumnFilters(column));
+  ColumnFilters<DateTime> get lastSuccessAt => $composableBuilder(
+      column: $table.lastSuccessAt, builder: (column) => ColumnFilters(column));
 }
 
 class $$SyncMetadataTableOrderingComposer
@@ -2381,15 +2328,11 @@ class $$SyncMetadataTableOrderingComposer
   ColumnOrderings<String> get resourceKey => $composableBuilder(
       column: $table.resourceKey, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get lastSuccessAt => $composableBuilder(
-      column: $table.lastSuccessAt,
-      builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<String> get status => $composableBuilder(
       column: $table.status, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get cursorOrOffset => $composableBuilder(
-      column: $table.cursorOrOffset,
+  ColumnOrderings<DateTime> get lastSuccessAt => $composableBuilder(
+      column: $table.lastSuccessAt,
       builder: (column) => ColumnOrderings(column));
 }
 
@@ -2405,14 +2348,11 @@ class $$SyncMetadataTableAnnotationComposer
   GeneratedColumn<String> get resourceKey => $composableBuilder(
       column: $table.resourceKey, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get lastSuccessAt => $composableBuilder(
-      column: $table.lastSuccessAt, builder: (column) => column);
-
   GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
 
-  GeneratedColumn<String> get cursorOrOffset => $composableBuilder(
-      column: $table.cursorOrOffset, builder: (column) => column);
+  GeneratedColumn<DateTime> get lastSuccessAt => $composableBuilder(
+      column: $table.lastSuccessAt, builder: (column) => column);
 }
 
 class $$SyncMetadataTableTableManager extends RootTableManager<
@@ -2442,30 +2382,26 @@ class $$SyncMetadataTableTableManager extends RootTableManager<
               $$SyncMetadataTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> resourceKey = const Value.absent(),
-            Value<DateTime?> lastSuccessAt = const Value.absent(),
             Value<String> status = const Value.absent(),
-            Value<String?> cursorOrOffset = const Value.absent(),
+            Value<DateTime?> lastSuccessAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               SyncMetadataCompanion(
             resourceKey: resourceKey,
-            lastSuccessAt: lastSuccessAt,
             status: status,
-            cursorOrOffset: cursorOrOffset,
+            lastSuccessAt: lastSuccessAt,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             required String resourceKey,
-            Value<DateTime?> lastSuccessAt = const Value.absent(),
             Value<String> status = const Value.absent(),
-            Value<String?> cursorOrOffset = const Value.absent(),
+            Value<DateTime?> lastSuccessAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               SyncMetadataCompanion.insert(
             resourceKey: resourceKey,
-            lastSuccessAt: lastSuccessAt,
             status: status,
-            cursorOrOffset: cursorOrOffset,
+            lastSuccessAt: lastSuccessAt,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0

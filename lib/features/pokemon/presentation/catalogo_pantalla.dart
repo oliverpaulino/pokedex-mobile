@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:pokedex/features/pokemon/data/sync/catalog_sync_provider.dart';
-import 'package:pokedex/features/pokemon/domain/catalog_sync.dart';
 import 'catalogo_provider.dart';
 
 class CatalogoPantalla extends ConsumerStatefulWidget {
@@ -41,24 +39,10 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
             if (busqueda.isEmpty) ...[
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () async {
-                  final resultado = await ref
-                      .read(catalogSyncCoordinatorProvider)
-                      .syncInitialCatalog();
-
-                  if (!context.mounted) return;
-
-                  if (resultado is CatalogSyncFailed) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'No se pudo sincronizar. Revisa tu conexión.',
-                        ),
-                      ),
-                    );
-                  }
+                onPressed: () {
+                  ref.invalidate(catalogoStreamProvider(busqueda));
                 },
-                child: const Text('Reintentar descarga'),
+                child: const Text('Reintentar'),
               ),
             ],
           ],
