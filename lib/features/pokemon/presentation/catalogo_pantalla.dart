@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:pokedex/core/widgets/indicador_conectividad.dart';
 import 'package:pokedex/features/pokemon/data/sync/catalog_sync_provider.dart';
 import 'package:pokedex/features/pokemon/domain/catalog_sync.dart';
 import 'catalogo_provider.dart';
@@ -145,16 +144,6 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
         title: const Text('Pokédex'),
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(52),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 6,
-            ),
-            child: IndicadorConectividad(),
-          ),
-        ),
       ),
       body: Column(
         children: [
