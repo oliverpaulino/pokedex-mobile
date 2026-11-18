@@ -98,7 +98,7 @@ void main() {
   });
 
   test('Revertir todo el lote si falla una escritura', () async {
-    // Ya existe Pikachu con numero nacional 25.
+    // Ya existe Pikachu y el tipo electric con ID 13.
     await repositorio.savePokemon([pikachu]);
 
     const primero = Pokemon(
@@ -110,13 +110,14 @@ void main() {
       ],
     );
 
-    // ID diferente, pero numero nacional repetido.
+    // La tabla type exige que name sea unico. Electric ya existe con ID 13,
+    // por lo que intentar guardarlo con ID 999 debe fallar en plena escritura.
     const segundo = Pokemon(
       id: 99,
-      number: 25,
+      number: 99,
       name: 'Otro Pokemon',
       types: [
-        PokemonType(id: 10, name: 'fire'),
+        PokemonType(id: 999, name: 'electric'),
       ],
     );
 
@@ -130,6 +131,28 @@ void main() {
     // El lote fallo y Bulbasaur tampoco debe quedar.
     expect(filas.length, 1);
     expect(filas.first.id, 25);
+  });
+
+  test('Admite variantes con el mismo numero nacional', () async {
+    const normal = Pokemon(
+      id: 52,
+      number: 52,
+      name: 'meowth',
+      types: [PokemonType(id: 1, name: 'normal')],
+    );
+    const alola = Pokemon(
+      id: 10152,
+      number: 52,
+      name: 'meowth-alola',
+      types: [PokemonType(id: 17, name: 'dark')],
+    );
+    await repositorio.savePokemon([normal, alola]);
+
+    final registros = await db.select(db.pokemons).get();
+    expect(registros.length, 2);
+    expect(registros.every((p) => p.nationalDexNumber == 52), isTrue);
+    expect((await repositorio.getPokemon(52))?.name, 'meowth');
+    expect((await repositorio.getPokemon(10152))?.name, 'meowth-alola');
   });
 
   test('El Stream avisa cuando cambia la base', () async {

@@ -23,7 +23,6 @@ part 'app_database.g.dart';
     TriviaAnswers,
     AppSettings,
     SyncMetadata,
-
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -32,7 +31,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.defaults() : super(driftDatabase(name: 'pokedex'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

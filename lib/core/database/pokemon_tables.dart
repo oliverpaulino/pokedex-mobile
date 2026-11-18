@@ -71,8 +71,8 @@ class PokemonTypes extends Table {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-    {pokemonId, slot},
-  ];
+        {pokemonId, slot},
+      ];
 }
 
 // Una fila por Pokemon cuando ya se descargaron las seis estadisticas.
@@ -118,8 +118,8 @@ class PokemonAbilities extends Table {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-    {pokemonId, slot},
-  ];
+        {pokemonId, slot},
+      ];
 }
 
 class Moves extends Table {
@@ -146,12 +146,12 @@ class PokemonMoves extends Table {
 
   @override
   Set<Column> get primaryKey => {
-    pokemonId,
-    moveId,
-    versionGroup,
-    learnMethod,
-    levelLearned,
-  };
+        pokemonId,
+        moveId,
+        versionGroup,
+        learnMethod,
+        levelLearned,
+      };
 }
 
 // Una evolucion es una relacion entre dos especies, no entre sprites.
@@ -159,8 +159,7 @@ class Evolutions extends Table {
   @override
   String get tableName => 'evolution';
 
-  IntColumn get fromSpeciesId =>
-      integer().references(PokemonSpecies, #id)();
+  IntColumn get fromSpeciesId => integer().references(PokemonSpecies, #id)();
   IntColumn get toSpeciesId => integer().references(PokemonSpecies, #id)();
   TextColumn get trigger => text()();
   TextColumn get triggerDetail => text().nullable()();
@@ -194,7 +193,6 @@ class Favorites extends Table {
   Set<Column> get primaryKey => {pokemonId};
 }
 
-
 // Las partidas de trivia son datos del usuario, no vienen de GraphQL.
 // El ranking se calcula ordenando estas filas por puntuacion.
 class TriviaResults extends Table {
@@ -213,8 +211,7 @@ class TriviaAnswers extends Table {
   String get tableName => 'trivia_answer';
 
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get triviaResultId =>
-      integer().references(TriviaResults, #id)();
+  IntColumn get triviaResultId => integer().references(TriviaResults, #id)();
   IntColumn get pokemonId => integer().references(Pokemons, #id)();
   BoolColumn get correct => boolean()();
 }
