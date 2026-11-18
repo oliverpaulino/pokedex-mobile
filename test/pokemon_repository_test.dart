@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:pokedex/core/database/app_database.dart'
     hide Pokemon, PokemonType;
-import 'package:pokedex/features/pokemon/data/pokemon_local_repository.dart';
+import 'package:pokedex/features/pokemon/data/sync/pokemon_local_repository.dart';
 import 'package:pokedex/features/pokemon/domain/entities.dart';
 import 'package:pokedex/features/pokemon/domain/failures.dart';
 

@@ -1,5 +1,7 @@
 # OF-01 / RNF-RES-01 / OE-02 — Data source remoto GraphQL
 
+> **Puntero (timeout):** cada solicitud remota del catálogo aplica un timeout explícito de **15 s** (`graphqlRequestTimeout` en `lib/core/network/network_config.dart`), configurado en `PokemonRemoteDataSource`. Ver [Timeout explícito (RNF-RES-01)](#timeout-explícito-rnf-res-01).
+
 ## Alcance
 
 Este documento describe la capa remota que consulta el catálogo de Pokémon en
@@ -36,6 +38,8 @@ La consulta usa `limit`/`offset`, orden estable `id asc` y el filtro
 | `lib/features/pokemon/data/mappers/pokemon_mapper.dart` | Convierte DTO → entidad de dominio y DTO → filas de Drift. |
 
 ## Timeout explícito (RNF-RES-01)
+
+**Dónde está:** `lib/core/network/network_config.dart` (`graphqlRequestTimeout = Duration(seconds: 15)`), aplicado en `lib/features/pokemon/data/remote/pokemon_remote_data_source.dart` a cada petición (`.timeout(timeout)`, con reintentos/esperas adicionales manejados por capas superiores como el cargador cuando corresponda).
 
 El valor se define una sola vez:
 

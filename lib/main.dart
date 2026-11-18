@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'app/catalog_sync_bootstrap.dart';
-import 'app/connectivity_bootstrap.dart';
 import 'features/pokemon/presentation/catalogo_pantalla.dart';
 
 void main() {
   runApp(
     const ProviderScope(
-      child: ConnectivityBootstrap(
-        child: CatalogSyncBootstrap(
-          child: MyApp(),
-        ),
-      ),
+      child: MyApp(),
     ),
   );
 }
