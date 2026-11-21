@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -17,6 +19,25 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
   String busqueda = '';
   bool _cargado = false;
 
+  Timer? _debounce;
+
+  void _buscarPokemon(String texto) {
+    // Cancelamos la búsqueda anterior.
+    _debounce?.cancel();
+
+    // Esperamos 400 ms desde la última tecla.
+    _debounce = Timer(
+      const Duration(milliseconds: 400),
+          () {
+        if (!mounted) return;
+
+        setState(() {
+          busqueda = texto.trim();
+        });
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -24,6 +45,13 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
       _cargado = true;
       Future<void>.microtask(() => ref.read(catalogLoaderProvider).load());
     }
+  }
+
+  @override
+  //Esto evita que el temporizador intente actualizar una pantalla que ya no existe
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   @override
@@ -162,11 +190,7 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
-              onChanged: (texto) {
-                setState(() {
-                  busqueda = texto;
-                });
-              },
+              onChanged: _buscarPokemon,
             ),
           ),
           Expanded(
