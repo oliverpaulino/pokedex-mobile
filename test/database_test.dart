@@ -48,7 +48,7 @@ void main() {
     expect(db.schemaVersion, 2);
   });
 
-  test('sync_metadata no tiene cursor_or_offset y conserva columnas esperadas', () async {
+  test('sync_metadata conserva las columnas del modelo conceptual', () async {
     final columns = await db
         .customSelect(
           "PRAGMA table_info('sync_metadata')",
@@ -59,9 +59,13 @@ void main() {
 
     expect(
       names,
-      containsAll(['resource_key', 'status', 'last_success_at']),
+      containsAll([
+        'resource_key',
+        'status',
+        'last_success_at',
+        'cursor_or_offset',
+      ]),
     );
-    expect(names, isNot(contains('cursor_or_offset')));
   });
 
   test('Permite formas con el mismo numero nacional', () async {

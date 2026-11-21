@@ -7,7 +7,9 @@ import '../features/pokemon/data/sync/catalog_load_store.dart';
 import '../features/pokemon/data/sync/catalog_loader.dart';
 import '../features/pokemon/data/sync/connection_checker.dart';
 import '../features/pokemon/data/mappers/pokemon_mapper.dart';
+import '../features/pokemon/data/sync/pokemon_detail_local_repository.dart';
 import '../features/pokemon/data/sync/pokemon_local_repository.dart';
+import '../features/pokemon/data/remote/pokemon_detail_remote_data_source_provider.dart';
 import '../features/pokemon/data/remote/pokemon_remote_data_source_provider.dart';
 import '../features/pokemon/domain/catalog_load.dart';
 import '../features/pokemon/domain/pokemon_repository.dart';
@@ -29,6 +31,16 @@ final pokemonRepositoryProvider = Provider<PokemonRepository>((ref) {
   final db = ref.watch(appDatabaseProvider);
 
   return PokemonLocalRepository(db);
+});
+
+// Detalle: el repositorio expone refreshDetail(id) y la UI solo observa Drift.
+final pokemonDetailRepositoryProvider = Provider<PokemonDetailLocalRepository>((
+  ref,
+) {
+  return PokemonDetailLocalRepository(
+    db: ref.watch(appDatabaseProvider),
+    remote: ref.watch(pokemonDetailRemoteDataSourceProvider),
+  );
 });
 
 final catalogLoadStoreProvider = Provider<CatalogLoadStore>((ref) {
