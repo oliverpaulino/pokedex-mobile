@@ -19,6 +19,37 @@ Serializers _$serializers = (Serializers().toBuilder()
       ..add(GPokemonCatalogData_pokemon_pokemontypes_type.serializer)
       ..add(GPokemonCatalogReq.serializer)
       ..add(GPokemonCatalogVars.serializer)
+      ..add(GPokemonDetailData.serializer)
+      ..add(GPokemonDetailData_pokemon.serializer)
+      ..add(GPokemonDetailData_pokemon_abilities.serializer)
+      ..add(GPokemonDetailData_pokemon_abilities_ability.serializer)
+      ..add(GPokemonDetailData_pokemon_abilities_ability_effects.serializer)
+      ..add(GPokemonDetailData_pokemon_moves.serializer)
+      ..add(GPokemonDetailData_pokemon_moves_method.serializer)
+      ..add(GPokemonDetailData_pokemon_moves_move.serializer)
+      ..add(GPokemonDetailData_pokemon_moves_versionGroup.serializer)
+      ..add(GPokemonDetailData_pokemon_species.serializer)
+      ..add(GPokemonDetailData_pokemon_species_eggGroups.serializer)
+      ..add(GPokemonDetailData_pokemon_species_eggGroups_egggroup.serializer)
+      ..add(GPokemonDetailData_pokemon_species_evolutionChain.serializer)
+      ..add(
+          GPokemonDetailData_pokemon_species_evolutionChain_species.serializer)
+      ..add(GPokemonDetailData_pokemon_species_evolutionChain_species_evolutions
+          .serializer)
+      ..add(
+          GPokemonDetailData_pokemon_species_evolutionChain_species_evolutions_trigger
+              .serializer)
+      ..add(GPokemonDetailData_pokemon_species_variants.serializer)
+      ..add(GPokemonDetailData_pokemon_sprites.serializer)
+      ..add(GPokemonDetailData_pokemon_stats.serializer)
+      ..add(GPokemonDetailData_pokemon_stats_stat.serializer)
+      ..add(GPokemonDetailData_pokemon_types.serializer)
+      ..add(GPokemonDetailData_pokemon_types_type.serializer)
+      ..add(GPokemonDetailData_typeEfficacies.serializer)
+      ..add(GPokemonDetailData_typeEfficacies_attackingType.serializer)
+      ..add(GPokemonDetailData_typeEfficacies_defendingType.serializer)
+      ..add(GPokemonDetailReq.serializer)
+      ..add(GPokemonDetailVars.serializer)
       ..add(GString_comparison_exp.serializer)
       ..add(Gability_aggregate_bool_exp.serializer)
       ..add(Gability_aggregate_bool_exp_bool_and.serializer)
@@ -2376,6 +2407,64 @@ Serializers _$serializers = (Serializers().toBuilder()
           ]),
           () => ListBuilder<GPokemonCatalogData_pokemon_pokemonsprites>())
       ..addBuilderFactory(
+          const FullType(
+              BuiltList, const [const FullType(GPokemonDetailData_pokemon)]),
+          () => ListBuilder<GPokemonDetailData_pokemon>())
+      ..addBuilderFactory(
+          const FullType(BuiltList,
+              const [const FullType(GPokemonDetailData_typeEfficacies)]),
+          () => ListBuilder<GPokemonDetailData_typeEfficacies>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [
+            const FullType(GPokemonDetailData_pokemon_abilities_ability_effects)
+          ]),
+          () => ListBuilder<
+              GPokemonDetailData_pokemon_abilities_ability_effects>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [
+            const FullType(GPokemonDetailData_pokemon_species_eggGroups)
+          ]),
+          () => ListBuilder<GPokemonDetailData_pokemon_species_eggGroups>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [
+            const FullType(GPokemonDetailData_pokemon_species_variants)
+          ]),
+          () => ListBuilder<GPokemonDetailData_pokemon_species_variants>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [
+            const FullType(
+                GPokemonDetailData_pokemon_species_evolutionChain_species)
+          ]),
+          () => ListBuilder<
+              GPokemonDetailData_pokemon_species_evolutionChain_species>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [
+            const FullType(
+                GPokemonDetailData_pokemon_species_evolutionChain_species_evolutions)
+          ]),
+          () => ListBuilder<
+              GPokemonDetailData_pokemon_species_evolutionChain_species_evolutions>())
+      ..addBuilderFactory(
+          const FullType(BuiltList,
+              const [const FullType(GPokemonDetailData_pokemon_types)]),
+          () => ListBuilder<GPokemonDetailData_pokemon_types>())
+      ..addBuilderFactory(
+          const FullType(BuiltList,
+              const [const FullType(GPokemonDetailData_pokemon_sprites)]),
+          () => ListBuilder<GPokemonDetailData_pokemon_sprites>())
+      ..addBuilderFactory(
+          const FullType(BuiltList,
+              const [const FullType(GPokemonDetailData_pokemon_stats)]),
+          () => ListBuilder<GPokemonDetailData_pokemon_stats>())
+      ..addBuilderFactory(
+          const FullType(BuiltList,
+              const [const FullType(GPokemonDetailData_pokemon_abilities)]),
+          () => ListBuilder<GPokemonDetailData_pokemon_abilities>())
+      ..addBuilderFactory(
+          const FullType(BuiltList,
+              const [const FullType(GPokemonDetailData_pokemon_moves)]),
+          () => ListBuilder<GPokemonDetailData_pokemon_moves>())
+      ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(Gability_bool_exp)]),
           () => ListBuilder<Gability_bool_exp>())
       ..addBuilderFactory(
@@ -4181,6 +4270,9 @@ Serializers _$serializers = (Serializers().toBuilder()
           const FullType(
               BuiltList, const [const FullType(Gversionname_select_column)]),
           () => ListBuilder<Gversionname_select_column>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => ListBuilder<String>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
           () => ListBuilder<String>())
