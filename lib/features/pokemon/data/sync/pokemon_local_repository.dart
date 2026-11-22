@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:pokedex/features/pokemon/domain/pokemon_orden.dart';
 
 import '../../../../core/database/app_database.dart' hide Pokemon, PokemonType;
 import '../../domain/entities.dart';
@@ -97,53 +98,86 @@ class PokemonLocalRepository implements PokemonRepository {
       ON pt.type_id = t.id
   ''';
 
-  // Observar el catalogo desde SQLite.
+
   @override
   Stream<List<Pokemon>> watchPokemon({
     String search = '',
+    int? tipoId,
+    OrdenPokemon orden = OrdenPokemon.numero,
   }) {
+    // Elegir la ordenacion solicitada.
+    final ordenSql = switch (orden) {
+      OrdenPokemon.numero =>
+      'p.national_dex_number ASC, p.id ASC',
+
+      OrdenPokemon.nombre =>
+      'LOWER(p.name) ASC, p.id ASC',
+
+      OrdenPokemon.totalBase => '''
+      CASE
+        WHEN ps.pokemon_id IS NULL THEN 1
+        ELSE 0
+      END ASC,
+      (
+        ps.hp +
+        ps.attack +
+        ps.defense +
+        ps.special_attack +
+        ps.special_defense +
+        ps.speed
+      ) DESC,
+      p.national_dex_number ASC,
+      p.id ASC
+    ''',
+    };
+
+    // Filtrar por tipo solo cuando se selecciono alguno.
+    final filtroTipo = tipoId == null
+        ? ''
+        : '''
+        AND EXISTS (
+          SELECT 1
+          FROM pokemon_type pt_filtro
+          WHERE pt_filtro.pokemon_id = p.id
+            AND pt_filtro.type_id = ?
+        )
+      ''';
+
+    // Los valores se envian como parametros SQL.
+    final variables = [
+      Variable.withString('%${search.trim()}%'),
+      if (tipoId != null) Variable.withInt(tipoId),
+    ];
+
+    final sql = '''
+    $consulta
+
+    LEFT JOIN pokemon_stats ps
+      ON ps.pokemon_id = p.id
+
+    WHERE LOWER(p.name) LIKE LOWER(?)
+
+    $filtroTipo
+
+    ORDER BY $ordenSql, pt.slot ASC
+  ''';
+
     return db
         .customSelect(
-          '''
-      $consulta
-      WHERE p.name LIKE ?
-      ORDER BY p.national_dex_number, pt.slot
-      ''',
-          variables: [
-            Variable.withString('%${search.trim()}%'),
-          ],
-          readsFrom: {
-            db.pokemons,
-            db.types,
-            db.pokemonTypes,
-          },
-        )
+      sql,
+      variables: variables,
+      readsFrom: {
+        db.pokemons,
+        db.types,
+        db.pokemonTypes,
+        db.pokemonStats,
+      },
+    )
         .watch()
         .map(convertir);
   }
 
-  // Buscar un Pokemon por ID.
-  @override
-  Future<Pokemon?> getPokemon(int id) async {
-    final filas = await db.customSelect(
-      '''
-      $consulta
-      WHERE p.id = ?
-      ORDER BY pt.slot
-      ''',
-      variables: [
-        Variable.withInt(id),
-      ],
-    ).get();
 
-    final resultado = convertir(filas);
-
-    if (resultado.isEmpty) {
-      return null;
-    }
-
-    return resultado.first;
-  }
 
   // Guardar o actualizar sin duplicados.
   @override
@@ -191,5 +225,11 @@ class PokemonLocalRepository implements PokemonRepository {
         }
       }
     });
+  }
+
+  @override
+  Future<Pokemon?> getPokemon(int id) {
+    // TODO: implement getPokemon
+    throw UnimplementedError();
   }
 }

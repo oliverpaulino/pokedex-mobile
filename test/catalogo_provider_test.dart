@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:pokedex/app/providers.dart';
 import 'package:pokedex/features/pokemon/domain/entities.dart';
+import 'package:pokedex/features/pokemon/domain/pokemon_orden.dart';
 import 'package:pokedex/features/pokemon/domain/pokemon_repository.dart';
 import 'package:pokedex/features/pokemon/presentation/catalogo_provider.dart';
 
@@ -20,9 +21,12 @@ class FakePokemonRepository implements PokemonRepository {
   @override
   Stream<List<Pokemon>> watchPokemon({
     String search = '',
+    int? tipoId,
+    OrdenPokemon orden = OrdenPokemon.numero,
   }) {
     consultas++;
     ultimaBusqueda = search;
+
     return responder(search);
   }
 
