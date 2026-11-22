@@ -10,6 +10,12 @@ Serializer<GPokemonCatalogData> _$gPokemonCatalogDataSerializer =
     _$GPokemonCatalogDataSerializer();
 Serializer<GPokemonCatalogData_pokemon> _$gPokemonCatalogDataPokemonSerializer =
     _$GPokemonCatalogData_pokemonSerializer();
+Serializer<GPokemonCatalogData_pokemon_stats>
+    _$gPokemonCatalogDataPokemonStatsSerializer =
+    _$GPokemonCatalogData_pokemon_statsSerializer();
+Serializer<GPokemonCatalogData_pokemon_stats_stat>
+    _$gPokemonCatalogDataPokemonStatsStatSerializer =
+    _$GPokemonCatalogData_pokemon_stats_statSerializer();
 Serializer<GPokemonCatalogData_pokemon_pokemontypes>
     _$gPokemonCatalogDataPokemonPokemontypesSerializer =
     _$GPokemonCatalogData_pokemon_pokemontypesSerializer();
@@ -113,6 +119,10 @@ class _$GPokemonCatalogData_pokemonSerializer
       serializers.serialize(object.id, specifiedType: const FullType(int)),
       'name',
       serializers.serialize(object.name, specifiedType: const FullType(String)),
+      'stats',
+      serializers.serialize(object.stats,
+          specifiedType: const FullType(BuiltList,
+              const [const FullType(GPokemonCatalogData_pokemon_stats)])),
       'pokemontypes',
       serializers.serialize(object.pokemontypes,
           specifiedType: const FullType(BuiltList, const [
@@ -152,6 +162,12 @@ class _$GPokemonCatalogData_pokemonSerializer
           result.name = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
+        case 'stats':
+          result.stats.replace(serializers.deserialize(value,
+              specifiedType: const FullType(BuiltList, const [
+                const FullType(GPokemonCatalogData_pokemon_stats)
+              ]))! as BuiltList<Object?>);
+          break;
         case 'pokemontypes':
           result.pokemontypes.replace(serializers.deserialize(value,
               specifiedType: const FullType(BuiltList, const [
@@ -163,6 +179,125 @@ class _$GPokemonCatalogData_pokemonSerializer
               specifiedType: const FullType(BuiltList, const [
                 const FullType(GPokemonCatalogData_pokemon_pokemonsprites)
               ]))! as BuiltList<Object?>);
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
+class _$GPokemonCatalogData_pokemon_statsSerializer
+    implements StructuredSerializer<GPokemonCatalogData_pokemon_stats> {
+  @override
+  final Iterable<Type> types = const [
+    GPokemonCatalogData_pokemon_stats,
+    _$GPokemonCatalogData_pokemon_stats
+  ];
+  @override
+  final String wireName = 'GPokemonCatalogData_pokemon_stats';
+
+  @override
+  Iterable<Object?> serialize(
+      Serializers serializers, GPokemonCatalogData_pokemon_stats object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object?>[
+      '__typename',
+      serializers.serialize(object.G__typename,
+          specifiedType: const FullType(String)),
+      'base_stat',
+      serializers.serialize(object.base_stat,
+          specifiedType: const FullType(int)),
+    ];
+    Object? value;
+    value = object.stat;
+    if (value != null) {
+      result
+        ..add('stat')
+        ..add(serializers.serialize(value,
+            specifiedType:
+                const FullType(GPokemonCatalogData_pokemon_stats_stat)));
+    }
+    return result;
+  }
+
+  @override
+  GPokemonCatalogData_pokemon_stats deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = GPokemonCatalogData_pokemon_statsBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case '__typename':
+          result.G__typename = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'base_stat':
+          result.base_stat = serializers.deserialize(value,
+              specifiedType: const FullType(int))! as int;
+          break;
+        case 'stat':
+          result.stat.replace(serializers.deserialize(value,
+                  specifiedType:
+                      const FullType(GPokemonCatalogData_pokemon_stats_stat))!
+              as GPokemonCatalogData_pokemon_stats_stat);
+          break;
+      }
+    }
+
+    return result.build();
+  }
+}
+
+class _$GPokemonCatalogData_pokemon_stats_statSerializer
+    implements StructuredSerializer<GPokemonCatalogData_pokemon_stats_stat> {
+  @override
+  final Iterable<Type> types = const [
+    GPokemonCatalogData_pokemon_stats_stat,
+    _$GPokemonCatalogData_pokemon_stats_stat
+  ];
+  @override
+  final String wireName = 'GPokemonCatalogData_pokemon_stats_stat';
+
+  @override
+  Iterable<Object?> serialize(
+      Serializers serializers, GPokemonCatalogData_pokemon_stats_stat object,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = <Object?>[
+      '__typename',
+      serializers.serialize(object.G__typename,
+          specifiedType: const FullType(String)),
+      'name',
+      serializers.serialize(object.name, specifiedType: const FullType(String)),
+    ];
+
+    return result;
+  }
+
+  @override
+  GPokemonCatalogData_pokemon_stats_stat deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    final result = GPokemonCatalogData_pokemon_stats_statBuilder();
+
+    final iterator = serialized.iterator;
+    while (iterator.moveNext()) {
+      final key = iterator.current! as String;
+      iterator.moveNext();
+      final Object? value = iterator.current;
+      switch (key) {
+        case '__typename':
+          result.G__typename = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
+        case 'name':
+          result.name = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
           break;
       }
     }
@@ -611,6 +746,8 @@ class _$GPokemonCatalogData_pokemon extends GPokemonCatalogData_pokemon {
   @override
   final String name;
   @override
+  final BuiltList<GPokemonCatalogData_pokemon_stats> stats;
+  @override
   final BuiltList<GPokemonCatalogData_pokemon_pokemontypes> pokemontypes;
   @override
   final BuiltList<GPokemonCatalogData_pokemon_pokemonsprites> pokemonsprites;
@@ -623,6 +760,7 @@ class _$GPokemonCatalogData_pokemon extends GPokemonCatalogData_pokemon {
       {required this.G__typename,
       required this.id,
       required this.name,
+      required this.stats,
       required this.pokemontypes,
       required this.pokemonsprites})
       : super._();
@@ -642,6 +780,7 @@ class _$GPokemonCatalogData_pokemon extends GPokemonCatalogData_pokemon {
         G__typename == other.G__typename &&
         id == other.id &&
         name == other.name &&
+        stats == other.stats &&
         pokemontypes == other.pokemontypes &&
         pokemonsprites == other.pokemonsprites;
   }
@@ -652,6 +791,7 @@ class _$GPokemonCatalogData_pokemon extends GPokemonCatalogData_pokemon {
     _$hash = $jc(_$hash, G__typename.hashCode);
     _$hash = $jc(_$hash, id.hashCode);
     _$hash = $jc(_$hash, name.hashCode);
+    _$hash = $jc(_$hash, stats.hashCode);
     _$hash = $jc(_$hash, pokemontypes.hashCode);
     _$hash = $jc(_$hash, pokemonsprites.hashCode);
     _$hash = $jf(_$hash);
@@ -664,6 +804,7 @@ class _$GPokemonCatalogData_pokemon extends GPokemonCatalogData_pokemon {
           ..add('G__typename', G__typename)
           ..add('id', id)
           ..add('name', name)
+          ..add('stats', stats)
           ..add('pokemontypes', pokemontypes)
           ..add('pokemonsprites', pokemonsprites))
         .toString();
@@ -687,6 +828,12 @@ class GPokemonCatalogData_pokemonBuilder
   String? _name;
   String? get name => _$this._name;
   set name(String? name) => _$this._name = name;
+
+  ListBuilder<GPokemonCatalogData_pokemon_stats>? _stats;
+  ListBuilder<GPokemonCatalogData_pokemon_stats> get stats =>
+      _$this._stats ??= ListBuilder<GPokemonCatalogData_pokemon_stats>();
+  set stats(ListBuilder<GPokemonCatalogData_pokemon_stats>? stats) =>
+      _$this._stats = stats;
 
   ListBuilder<GPokemonCatalogData_pokemon_pokemontypes>? _pokemontypes;
   ListBuilder<GPokemonCatalogData_pokemon_pokemontypes> get pokemontypes =>
@@ -716,6 +863,7 @@ class GPokemonCatalogData_pokemonBuilder
       _G__typename = $v.G__typename;
       _id = $v.id;
       _name = $v.name;
+      _stats = $v.stats.toBuilder();
       _pokemontypes = $v.pokemontypes.toBuilder();
       _pokemonsprites = $v.pokemonsprites.toBuilder();
       _$v = null;
@@ -747,12 +895,15 @@ class GPokemonCatalogData_pokemonBuilder
                 id, r'GPokemonCatalogData_pokemon', 'id'),
             name: BuiltValueNullFieldError.checkNotNull(
                 name, r'GPokemonCatalogData_pokemon', 'name'),
+            stats: stats.build(),
             pokemontypes: pokemontypes.build(),
             pokemonsprites: pokemonsprites.build(),
           );
     } catch (_) {
       late String _$failedField;
       try {
+        _$failedField = 'stats';
+        stats.build();
         _$failedField = 'pokemontypes';
         pokemontypes.build();
         _$failedField = 'pokemonsprites';
@@ -763,6 +914,244 @@ class GPokemonCatalogData_pokemonBuilder
       }
       rethrow;
     }
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GPokemonCatalogData_pokemon_stats
+    extends GPokemonCatalogData_pokemon_stats {
+  @override
+  final String G__typename;
+  @override
+  final int base_stat;
+  @override
+  final GPokemonCatalogData_pokemon_stats_stat? stat;
+
+  factory _$GPokemonCatalogData_pokemon_stats(
+          [void Function(GPokemonCatalogData_pokemon_statsBuilder)? updates]) =>
+      (GPokemonCatalogData_pokemon_statsBuilder()..update(updates))._build();
+
+  _$GPokemonCatalogData_pokemon_stats._(
+      {required this.G__typename, required this.base_stat, this.stat})
+      : super._();
+  @override
+  GPokemonCatalogData_pokemon_stats rebuild(
+          void Function(GPokemonCatalogData_pokemon_statsBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GPokemonCatalogData_pokemon_statsBuilder toBuilder() =>
+      GPokemonCatalogData_pokemon_statsBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GPokemonCatalogData_pokemon_stats &&
+        G__typename == other.G__typename &&
+        base_stat == other.base_stat &&
+        stat == other.stat;
+  }
+
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, G__typename.hashCode);
+    _$hash = $jc(_$hash, base_stat.hashCode);
+    _$hash = $jc(_$hash, stat.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper(r'GPokemonCatalogData_pokemon_stats')
+          ..add('G__typename', G__typename)
+          ..add('base_stat', base_stat)
+          ..add('stat', stat))
+        .toString();
+  }
+}
+
+class GPokemonCatalogData_pokemon_statsBuilder
+    implements
+        Builder<GPokemonCatalogData_pokemon_stats,
+            GPokemonCatalogData_pokemon_statsBuilder> {
+  _$GPokemonCatalogData_pokemon_stats? _$v;
+
+  String? _G__typename;
+  String? get G__typename => _$this._G__typename;
+  set G__typename(String? G__typename) => _$this._G__typename = G__typename;
+
+  int? _base_stat;
+  int? get base_stat => _$this._base_stat;
+  set base_stat(int? base_stat) => _$this._base_stat = base_stat;
+
+  GPokemonCatalogData_pokemon_stats_statBuilder? _stat;
+  GPokemonCatalogData_pokemon_stats_statBuilder get stat =>
+      _$this._stat ??= GPokemonCatalogData_pokemon_stats_statBuilder();
+  set stat(GPokemonCatalogData_pokemon_stats_statBuilder? stat) =>
+      _$this._stat = stat;
+
+  GPokemonCatalogData_pokemon_statsBuilder() {
+    GPokemonCatalogData_pokemon_stats._initializeBuilder(this);
+  }
+
+  GPokemonCatalogData_pokemon_statsBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _G__typename = $v.G__typename;
+      _base_stat = $v.base_stat;
+      _stat = $v.stat?.toBuilder();
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(GPokemonCatalogData_pokemon_stats other) {
+    _$v = other as _$GPokemonCatalogData_pokemon_stats;
+  }
+
+  @override
+  void update(
+      void Function(GPokemonCatalogData_pokemon_statsBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GPokemonCatalogData_pokemon_stats build() => _build();
+
+  _$GPokemonCatalogData_pokemon_stats _build() {
+    _$GPokemonCatalogData_pokemon_stats _$result;
+    try {
+      _$result = _$v ??
+          _$GPokemonCatalogData_pokemon_stats._(
+            G__typename: BuiltValueNullFieldError.checkNotNull(G__typename,
+                r'GPokemonCatalogData_pokemon_stats', 'G__typename'),
+            base_stat: BuiltValueNullFieldError.checkNotNull(
+                base_stat, r'GPokemonCatalogData_pokemon_stats', 'base_stat'),
+            stat: _stat?.build(),
+          );
+    } catch (_) {
+      late String _$failedField;
+      try {
+        _$failedField = 'stat';
+        _stat?.build();
+      } catch (e) {
+        throw BuiltValueNestedFieldError(
+            r'GPokemonCatalogData_pokemon_stats', _$failedField, e.toString());
+      }
+      rethrow;
+    }
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$GPokemonCatalogData_pokemon_stats_stat
+    extends GPokemonCatalogData_pokemon_stats_stat {
+  @override
+  final String G__typename;
+  @override
+  final String name;
+
+  factory _$GPokemonCatalogData_pokemon_stats_stat(
+          [void Function(GPokemonCatalogData_pokemon_stats_statBuilder)?
+              updates]) =>
+      (GPokemonCatalogData_pokemon_stats_statBuilder()..update(updates))
+          ._build();
+
+  _$GPokemonCatalogData_pokemon_stats_stat._(
+      {required this.G__typename, required this.name})
+      : super._();
+  @override
+  GPokemonCatalogData_pokemon_stats_stat rebuild(
+          void Function(GPokemonCatalogData_pokemon_stats_statBuilder)
+              updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  GPokemonCatalogData_pokemon_stats_statBuilder toBuilder() =>
+      GPokemonCatalogData_pokemon_stats_statBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is GPokemonCatalogData_pokemon_stats_stat &&
+        G__typename == other.G__typename &&
+        name == other.name;
+  }
+
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, G__typename.hashCode);
+    _$hash = $jc(_$hash, name.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper(
+            r'GPokemonCatalogData_pokemon_stats_stat')
+          ..add('G__typename', G__typename)
+          ..add('name', name))
+        .toString();
+  }
+}
+
+class GPokemonCatalogData_pokemon_stats_statBuilder
+    implements
+        Builder<GPokemonCatalogData_pokemon_stats_stat,
+            GPokemonCatalogData_pokemon_stats_statBuilder> {
+  _$GPokemonCatalogData_pokemon_stats_stat? _$v;
+
+  String? _G__typename;
+  String? get G__typename => _$this._G__typename;
+  set G__typename(String? G__typename) => _$this._G__typename = G__typename;
+
+  String? _name;
+  String? get name => _$this._name;
+  set name(String? name) => _$this._name = name;
+
+  GPokemonCatalogData_pokemon_stats_statBuilder() {
+    GPokemonCatalogData_pokemon_stats_stat._initializeBuilder(this);
+  }
+
+  GPokemonCatalogData_pokemon_stats_statBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _G__typename = $v.G__typename;
+      _name = $v.name;
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(GPokemonCatalogData_pokemon_stats_stat other) {
+    _$v = other as _$GPokemonCatalogData_pokemon_stats_stat;
+  }
+
+  @override
+  void update(
+      void Function(GPokemonCatalogData_pokemon_stats_statBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  GPokemonCatalogData_pokemon_stats_stat build() => _build();
+
+  _$GPokemonCatalogData_pokemon_stats_stat _build() {
+    final _$result = _$v ??
+        _$GPokemonCatalogData_pokemon_stats_stat._(
+          G__typename: BuiltValueNullFieldError.checkNotNull(G__typename,
+              r'GPokemonCatalogData_pokemon_stats_stat', 'G__typename'),
+          name: BuiltValueNullFieldError.checkNotNull(
+              name, r'GPokemonCatalogData_pokemon_stats_stat', 'name'),
+        );
     replace(_$result);
     return _$result;
   }

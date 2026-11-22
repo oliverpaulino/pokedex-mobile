@@ -15,7 +15,9 @@ import 'package:pokedex/features/pokemon/data/graphql/__generated__/pokemon_cata
         GPokemonCatalogData_pokemon_aggregate_aggregate,
         GPokemonCatalogData_pokemon_pokemonsprites,
         GPokemonCatalogData_pokemon_pokemontypes,
-        GPokemonCatalogData_pokemon_pokemontypes_type;
+        GPokemonCatalogData_pokemon_pokemontypes_type,
+        GPokemonCatalogData_pokemon_stats,
+        GPokemonCatalogData_pokemon_stats_stat;
 import 'package:pokedex/features/pokemon/data/graphql/__generated__/pokemon_catalog.req.gql.dart'
     show GPokemonCatalogReq;
 import 'package:pokedex/features/pokemon/data/graphql/__generated__/pokemon_catalog.var.gql.dart'
@@ -2357,6 +2359,8 @@ final SerializersBuilder _serializersBuilder = _$serializers.toBuilder()
   GPokemonCatalogData_pokemon_pokemonsprites,
   GPokemonCatalogData_pokemon_pokemontypes,
   GPokemonCatalogData_pokemon_pokemontypes_type,
+  GPokemonCatalogData_pokemon_stats,
+  GPokemonCatalogData_pokemon_stats_stat,
   GPokemonCatalogReq,
   GPokemonCatalogVars,
   GPokemonDetailData,

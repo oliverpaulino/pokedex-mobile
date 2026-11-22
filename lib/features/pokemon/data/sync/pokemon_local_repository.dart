@@ -98,7 +98,6 @@ class PokemonLocalRepository implements PokemonRepository {
       ON pt.type_id = t.id
   ''';
 
-
   @override
   Stream<List<Pokemon>> watchPokemon({
     String search = '',
@@ -107,12 +106,8 @@ class PokemonLocalRepository implements PokemonRepository {
   }) {
     // Elegir la ordenacion solicitada.
     final ordenSql = switch (orden) {
-      OrdenPokemon.numero =>
-      'p.national_dex_number ASC, p.id ASC',
-
-      OrdenPokemon.nombre =>
-      'LOWER(p.name) ASC, p.id ASC',
-
+      OrdenPokemon.numero => 'p.national_dex_number ASC, p.id ASC',
+      OrdenPokemon.nombre => 'LOWER(p.name) ASC, p.id ASC',
       OrdenPokemon.totalBase => '''
       CASE
         WHEN ps.pokemon_id IS NULL THEN 1
@@ -164,20 +159,18 @@ class PokemonLocalRepository implements PokemonRepository {
 
     return db
         .customSelect(
-      sql,
-      variables: variables,
-      readsFrom: {
-        db.pokemons,
-        db.types,
-        db.pokemonTypes,
-        db.pokemonStats,
-      },
-    )
+          sql,
+          variables: variables,
+          readsFrom: {
+            db.pokemons,
+            db.types,
+            db.pokemonTypes,
+            db.pokemonStats,
+          },
+        )
         .watch()
         .map(convertir);
   }
-
-
 
   // Guardar o actualizar sin duplicados.
   @override
@@ -207,7 +200,21 @@ class PokemonLocalRepository implements PokemonRepository {
         // Guardar los tipos actuales.
         for (var i = 0; i < pokemon.types.length; i++) {
           final tipo = pokemon.types[i];
+          final stats = pokemon.baseStats;
 
+          if (stats != null) {
+            await db.into(db.pokemonStats).insertOnConflictUpdate(
+                  PokemonStatsCompanion.insert(
+                    pokemonId: Value(pokemon.id),
+                    hp: stats.hp,
+                    attack: stats.attack,
+                    defense: stats.defense,
+                    specialAttack: stats.specialAttack,
+                    specialDefense: stats.specialDefense,
+                    speed: stats.speed,
+                  ),
+                );
+          }
           await db.into(db.types).insertOnConflictUpdate(
                 TypesCompanion.insert(
                   id: Value(tipo.id),

@@ -17,6 +17,8 @@ Serializers _$serializers = (Serializers().toBuilder()
       ..add(GPokemonCatalogData_pokemon_pokemonsprites.serializer)
       ..add(GPokemonCatalogData_pokemon_pokemontypes.serializer)
       ..add(GPokemonCatalogData_pokemon_pokemontypes_type.serializer)
+      ..add(GPokemonCatalogData_pokemon_stats.serializer)
+      ..add(GPokemonCatalogData_pokemon_stats_stat.serializer)
       ..add(GPokemonCatalogReq.serializer)
       ..add(GPokemonCatalogVars.serializer)
       ..add(GPokemonDetailData.serializer)
@@ -2397,6 +2399,10 @@ Serializers _$serializers = (Serializers().toBuilder()
           const FullType(
               BuiltList, const [const FullType(GPokemonCatalogData_pokemon)]),
           () => ListBuilder<GPokemonCatalogData_pokemon>())
+      ..addBuilderFactory(
+          const FullType(BuiltList,
+              const [const FullType(GPokemonCatalogData_pokemon_stats)]),
+          () => ListBuilder<GPokemonCatalogData_pokemon_stats>())
       ..addBuilderFactory(
           const FullType(BuiltList,
               const [const FullType(GPokemonCatalogData_pokemon_pokemontypes)]),

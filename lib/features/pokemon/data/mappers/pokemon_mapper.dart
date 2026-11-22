@@ -8,6 +8,7 @@ class PokemonMapper {
   const PokemonMapper();
 
   Pokemon toEntity(PokemonDto dto) {
+    final stats = dto.stats;
     return Pokemon(
       id: dto.id,
       number: dto.id,
@@ -21,6 +22,16 @@ class PokemonMapper {
             ),
           )
           .toList(growable: false),
+      baseStats: stats == null
+          ? null
+          : PokemonBaseStats(
+              hp: stats.hp,
+              attack: stats.attack,
+              defense: stats.defense,
+              specialAttack: stats.specialAttack,
+              specialDefense: stats.specialDefense,
+              speed: stats.speed,
+            ),
     );
   }
 
