@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pokedex/features/pokemon/presentation/catalogo_filtros_provider.dart';
 
 import '../../../app/providers.dart';
 import '../domain/entities.dart';
@@ -26,13 +27,19 @@ class CatalogoState {
 }
 
 // Escucha los Pokemon directamente desde el repositorio local.
+
 final catalogoStreamProvider =
     StreamProvider.autoDispose.family<List<Pokemon>, String>(
   (ref, search) {
     final repository = ref.watch(pokemonRepositoryProvider);
 
+    // Escuchar los filtros actuales.
+    final filtros = ref.watch(filtrosCatalogoProvider);
+
     return repository.watchPokemon(
       search: search.trim(),
+      tipoId: filtros.tipoId,
+      orden: filtros.orden,
     );
   },
   retry: (retryCount, error) => null,

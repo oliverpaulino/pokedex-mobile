@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:pokedex/features/pokemon/domain/pokemon_orden.dart';
+import 'package:pokedex/features/pokemon/presentation/catalogo_filtros_provider.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/widgets/indicador_conectividad.dart';
@@ -57,7 +59,9 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
   @override
   Widget build(BuildContext context) {
     final estado = ref.watch(catalogoStateProvider(busqueda));
+    final filtros = ref.watch(filtrosCatalogoProvider);
 
+    final hayFiltrosActivos = busqueda.isNotEmpty || filtros.tipoId != null;
     final carga = ref.watch(catalogLoadStatusProvider);
 
 // Solo sabemos que el catálogo se completó cuando
@@ -79,11 +83,13 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              busqueda.isEmpty
-                  ? 'Todavía no hay Pokémon guardados'
-                  : 'No se encontraron Pokémon',
+              hayFiltrosActivos
+                  ? 'No hay coincidencias entre los Pokémon descargados '
+                      'para esta búsqueda o estos filtros.'
+                  : 'Todavía no hay Pokémon guardados',
+              textAlign: TextAlign.center,
             ),
-            if (busqueda.isEmpty) ...[
+            if (!hayFiltrosActivos) ...[
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {
@@ -218,6 +224,74 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
                 ],
               ),
             ),
+          SizedBox(
+            height: 60,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              children: [
+                // Elegir el tipo.
+                DropdownButton<int?>(
+                  value: filtros.tipoId,
+                  hint: const Text('Todos los tipos'),
+                  items: [
+                    const DropdownMenuItem<int?>(
+                      value: null,
+                      child: Text('Todos los tipos'),
+                    ),
+                    ...tiposPokemon.entries.map(
+                      (tipo) => DropdownMenuItem<int?>(
+                        value: tipo.key,
+                        child: Text(tipo.value),
+                      ),
+                    ),
+                  ],
+                  onChanged: (tipoId) {
+                    ref
+                        .read(filtrosCatalogoProvider.notifier)
+                        .cambiarTipo(tipoId);
+                  },
+                ),
+
+                const SizedBox(width: 16),
+
+                // Elegir el orden.
+                DropdownButton<OrdenPokemon>(
+                  value: filtros.orden,
+                  items: const [
+                    DropdownMenuItem(
+                      value: OrdenPokemon.numero,
+                      child: Text('Número'),
+                    ),
+                    DropdownMenuItem(
+                      value: OrdenPokemon.nombre,
+                      child: Text('Nombre A-Z'),
+                    ),
+                    DropdownMenuItem(
+                      value: OrdenPokemon.totalBase,
+                      child: Text('Total base ↓'),
+                    ),
+                  ],
+                  onChanged: (orden) {
+                    if (orden != null) {
+                      ref
+                          .read(filtrosCatalogoProvider.notifier)
+                          .cambiarOrden(orden);
+                    }
+                  },
+                ),
+
+                const SizedBox(width: 12),
+
+                TextButton(
+                  onPressed: () {
+                    ref.read(filtrosCatalogoProvider.notifier).limpiar();
+                  },
+                  child: const Text('Limpiar'),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: contenido,
           ),

@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:drift/native.dart';
-import 'package:flutter_test/flutter_test.dart' hide isNotNull;
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:pokedex/core/database/app_database.dart'
     hide Pokemon, PokemonType;
 import 'package:pokedex/features/pokemon/data/sync/pokemon_local_repository.dart';
 import 'package:pokedex/features/pokemon/domain/entities.dart';
 import 'package:pokedex/features/pokemon/domain/failures.dart';
-import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' hide isNotNull;
 import 'package:pokedex/features/pokemon/domain/pokemon_orden.dart';
 
 void main() {
