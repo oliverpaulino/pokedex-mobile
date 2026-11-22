@@ -28,7 +28,7 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
     // Esperamos 400 ms desde la última tecla.
     _debounce = Timer(
       const Duration(milliseconds: 400),
-          () {
+      () {
         if (!mounted) return;
 
         setState(() {
@@ -57,6 +57,12 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
   @override
   Widget build(BuildContext context) {
     final estado = ref.watch(catalogoStateProvider(busqueda));
+
+    final carga = ref.watch(catalogLoadStatusProvider);
+
+// Solo sabemos que el catálogo se completó cuando
+// existe una sincronización completa registrada.
+    final catalogoIncompleto = carga.asData?.value.lastSuccessAt == null;
 
     Widget contenido;
 
@@ -193,6 +199,25 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
               onChanged: _buscarPokemon,
             ),
           ),
+          if (catalogoIncompleto)
+            const Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 8,
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Catálogo local incompleto. '
+                      'Solo se muestran los Pokémon descargados.',
+                    ),
+                  ),
+                ],
+              ),
+            ),
           Expanded(
             child: contenido,
           ),
