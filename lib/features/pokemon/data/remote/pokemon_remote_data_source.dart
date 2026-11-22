@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:ferry/ferry.dart';
 
+import '../../../../core/network/graphql_failure_mapper.dart';
 import '../../../../core/network/network_config.dart';
 import '../../domain/failures.dart';
 import '../dto/pokemon_catalog_dto.dart';
@@ -76,24 +77,17 @@ class PokemonRemoteDataSource implements PokemonCatalogRemoteDataSource {
   ) {
     final linkException = response.linkException;
     if (linkException != null) {
-      throw _mapLinkException(linkException);
+      throw const GraphqlFailureMapper().mapLinkException(linkException);
     }
 
-    final graphqlErrors = response.graphqlErrors;
-    if (graphqlErrors != null && graphqlErrors.isNotEmpty) {
-      if (graphqlErrors.any(
-        (error) => _isRateLimit(error.message, error.extensions),
-      )) {
-        throw const RateLimitFailure();
-      }
-
-      final message = graphqlErrors.map((error) => error.message).join(' | ');
-
-      if (response.data != null) {
-        throw PartialResponseFailure('Respuesta parcial: $message');
-      }
-
-      throw GraphqlFailure(message);
+    final graphqlErrors = response.graphqlErrors ?? const [];
+    final failure = const GraphqlFailureMapper().mapErrors(
+      messages: graphqlErrors.map((error) => error.message),
+      extensions: graphqlErrors.map((error) => error.extensions),
+      hasData: response.data != null,
+    );
+    if (failure != null) {
+      throw failure;
     }
 
     final data = response.data;
@@ -102,44 +96,5 @@ class PokemonRemoteDataSource implements PokemonCatalogRemoteDataSource {
     }
 
     return PokemonCatalogDto.fromGraphql(data);
-  }
-
-  AppFailure _mapLinkException(LinkException exception) {
-    if (exception is ServerException) {
-      if (exception.originalException is TimeoutException) {
-        return const TimeoutFailure();
-      }
-      if (exception.statusCode == 429) {
-        return const RateLimitFailure();
-      }
-      if (exception.statusCode == null) {
-        return const NetworkFailure();
-      }
-
-      return GraphqlFailure(
-        'Error del servidor GraphQL (${exception.statusCode})',
-      );
-    }
-
-    if (exception is ResponseFormatException) {
-      return const GraphqlFailure('Respuesta GraphQL invalida');
-    }
-
-    if (exception is RequestFormatException) {
-      return const GraphqlFailure('Solicitud GraphQL invalida');
-    }
-
-    return const UnknownFailure();
-  }
-
-  bool _isRateLimit(String message, Map<String, dynamic>? extensions) {
-    final code = extensions?['code']?.toString().toLowerCase();
-    final normalizedMessage = message.toLowerCase();
-
-    return code == 'rate_limit' ||
-        code == 'rate-limit' ||
-        code == 'too_many_requests' ||
-        normalizedMessage.contains('rate limit') ||
-        normalizedMessage.contains('too many requests');
   }
 }

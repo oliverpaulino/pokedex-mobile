@@ -1,0 +1,121 @@
+# Detalle de una forma concreta por id estable de PokeAPI.
+# Una sola peticion entrega identidad, artworks, stats, habilidades,
+# movimientos, formas y la cadena evolutiva completa (con sus ramas).
+query PokemonDetail($id: Int!, $versionGroups: [String!]!) {
+  pokemon(where: { id: { _eq: $id } }, limit: 1) {
+    id
+    name
+    is_default
+    height
+    weight
+    pokemon_species_id
+
+    species: pokemonspecy {
+      id
+      name
+      generation_id
+      evolution_chain_id
+      evolves_from_species_id
+      eggGroups: pokemonegggroups {
+        egggroup {
+          id
+          name
+        }
+      }
+      # Formas/variantes: cada forma es una fila de `pokemon`.
+      variants: pokemons(order_by: { id: asc }) {
+        id
+        name
+        is_default
+      }
+      evolutionChain: evolutionchain {
+        species: pokemonspecies(order_by: { id: asc }) {
+          id
+          name
+          evolves_from_species_id
+          evolutions: pokemonevolutions(order_by: { id: asc }) {
+            min_level
+            condition_expression
+            trigger: evolutiontrigger {
+              name
+            }
+          }
+        }
+      }
+    }
+
+    types: pokemontypes(order_by: { slot: asc }) {
+      slot
+      type {
+        id
+        name
+      }
+    }
+
+    sprites: pokemonsprites(limit: 1) {
+      artwork: sprites(path: "other.official-artwork.front_default")
+      front: sprites(path: "front_default")
+      shinyArtwork: sprites(path: "other.official-artwork.front_shiny")
+      shinyFront: sprites(path: "front_shiny")
+    }
+
+    stats: pokemonstats(order_by: { stat_id: asc }) {
+      base_stat
+      stat {
+        id
+        name
+      }
+    }
+
+    abilities: pokemonabilities(order_by: { slot: asc }) {
+      slot
+      is_hidden
+      ability {
+        id
+        name
+        effects: abilityeffecttexts(
+          where: { language: { name: { _eq: "en" } } }
+          limit: 1
+        ) {
+          effect
+          short_effect
+        }
+      }
+    }
+
+    moves: pokemonmoves(
+      where: { versiongroup: { name: { _in: $versionGroups } } }
+      order_by: {
+        version_group_id: asc
+        move_learn_method_id: asc
+        level: asc
+        move_id: asc
+      }
+    ) {
+      level
+      move {
+        id
+        name
+      }
+      method: movelearnmethod {
+        name
+      }
+      versionGroup: versiongroup {
+        name
+      }
+    }
+  }
+
+  # Tabla completa (18x18) para calcular matchups offline desde Drift.
+  typeEfficacies: typeefficacy(order_by: { id: asc }) {
+    damage_factor
+    attackingType: type {
+      id
+      name
+    }
+    defendingType: TypeByTargetTypeId {
+      id
+      name
+    }
+  }
+}

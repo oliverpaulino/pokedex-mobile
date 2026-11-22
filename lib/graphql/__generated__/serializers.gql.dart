@@ -20,6 +20,37 @@ import 'package:pokedex/features/pokemon/data/graphql/__generated__/pokemon_cata
     show GPokemonCatalogReq;
 import 'package:pokedex/features/pokemon/data/graphql/__generated__/pokemon_catalog.var.gql.dart'
     show GPokemonCatalogVars;
+import 'package:pokedex/features/pokemon/data/graphql/__generated__/pokemon_detail.data.gql.dart'
+    show
+        GPokemonDetailData,
+        GPokemonDetailData_pokemon,
+        GPokemonDetailData_pokemon_abilities,
+        GPokemonDetailData_pokemon_abilities_ability,
+        GPokemonDetailData_pokemon_abilities_ability_effects,
+        GPokemonDetailData_pokemon_moves,
+        GPokemonDetailData_pokemon_moves_method,
+        GPokemonDetailData_pokemon_moves_move,
+        GPokemonDetailData_pokemon_moves_versionGroup,
+        GPokemonDetailData_pokemon_species,
+        GPokemonDetailData_pokemon_species_eggGroups,
+        GPokemonDetailData_pokemon_species_eggGroups_egggroup,
+        GPokemonDetailData_pokemon_species_evolutionChain,
+        GPokemonDetailData_pokemon_species_evolutionChain_species,
+        GPokemonDetailData_pokemon_species_evolutionChain_species_evolutions,
+        GPokemonDetailData_pokemon_species_evolutionChain_species_evolutions_trigger,
+        GPokemonDetailData_pokemon_species_variants,
+        GPokemonDetailData_pokemon_sprites,
+        GPokemonDetailData_pokemon_stats,
+        GPokemonDetailData_pokemon_stats_stat,
+        GPokemonDetailData_pokemon_types,
+        GPokemonDetailData_pokemon_types_type,
+        GPokemonDetailData_typeEfficacies,
+        GPokemonDetailData_typeEfficacies_attackingType,
+        GPokemonDetailData_typeEfficacies_defendingType;
+import 'package:pokedex/features/pokemon/data/graphql/__generated__/pokemon_detail.req.gql.dart'
+    show GPokemonDetailReq;
+import 'package:pokedex/features/pokemon/data/graphql/__generated__/pokemon_detail.var.gql.dart'
+    show GPokemonDetailVars;
 import 'package:pokedex/graphql/__generated__/schema.schema.gql.dart'
     show
         GBoolean_comparison_exp,
@@ -2328,6 +2359,33 @@ final SerializersBuilder _serializersBuilder = _$serializers.toBuilder()
   GPokemonCatalogData_pokemon_pokemontypes_type,
   GPokemonCatalogReq,
   GPokemonCatalogVars,
+  GPokemonDetailData,
+  GPokemonDetailData_pokemon,
+  GPokemonDetailData_pokemon_abilities,
+  GPokemonDetailData_pokemon_abilities_ability,
+  GPokemonDetailData_pokemon_abilities_ability_effects,
+  GPokemonDetailData_pokemon_moves,
+  GPokemonDetailData_pokemon_moves_method,
+  GPokemonDetailData_pokemon_moves_move,
+  GPokemonDetailData_pokemon_moves_versionGroup,
+  GPokemonDetailData_pokemon_species,
+  GPokemonDetailData_pokemon_species_eggGroups,
+  GPokemonDetailData_pokemon_species_eggGroups_egggroup,
+  GPokemonDetailData_pokemon_species_evolutionChain,
+  GPokemonDetailData_pokemon_species_evolutionChain_species,
+  GPokemonDetailData_pokemon_species_evolutionChain_species_evolutions,
+  GPokemonDetailData_pokemon_species_evolutionChain_species_evolutions_trigger,
+  GPokemonDetailData_pokemon_species_variants,
+  GPokemonDetailData_pokemon_sprites,
+  GPokemonDetailData_pokemon_stats,
+  GPokemonDetailData_pokemon_stats_stat,
+  GPokemonDetailData_pokemon_types,
+  GPokemonDetailData_pokemon_types_type,
+  GPokemonDetailData_typeEfficacies,
+  GPokemonDetailData_typeEfficacies_attackingType,
+  GPokemonDetailData_typeEfficacies_defendingType,
+  GPokemonDetailReq,
+  GPokemonDetailVars,
   GString_comparison_exp,
   Gability_aggregate_bool_exp,
   Gability_aggregate_bool_exp_bool_and,
