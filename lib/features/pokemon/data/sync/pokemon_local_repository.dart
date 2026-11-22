@@ -198,23 +198,11 @@ class PokemonLocalRepository implements PokemonRepository {
             .go();
 
         // Guardar los tipos actuales.
+
+        // Guardar los tipos actuales.
         for (var i = 0; i < pokemon.types.length; i++) {
           final tipo = pokemon.types[i];
-          final stats = pokemon.baseStats;
 
-          if (stats != null) {
-            await db.into(db.pokemonStats).insertOnConflictUpdate(
-                  PokemonStatsCompanion.insert(
-                    pokemonId: Value(pokemon.id),
-                    hp: stats.hp,
-                    attack: stats.attack,
-                    defense: stats.defense,
-                    specialAttack: stats.specialAttack,
-                    specialDefense: stats.specialDefense,
-                    speed: stats.speed,
-                  ),
-                );
-          }
           await db.into(db.types).insertOnConflictUpdate(
                 TypesCompanion.insert(
                   id: Value(tipo.id),
@@ -230,13 +218,46 @@ class PokemonLocalRepository implements PokemonRepository {
                 ),
               );
         }
+
+        // Guardar las estadisticas una sola vez por Pokemon.
+        final stats = pokemon.baseStats;
+
+        if (stats != null) {
+          await db.into(db.pokemonStats).insertOnConflictUpdate(
+                PokemonStatsCompanion.insert(
+                  pokemonId: Value(pokemon.id),
+                  hp: stats.hp,
+                  attack: stats.attack,
+                  defense: stats.defense,
+                  specialAttack: stats.specialAttack,
+                  specialDefense: stats.specialDefense,
+                  speed: stats.speed,
+                ),
+              );
+        }
       }
     });
   }
 
   @override
-  Future<Pokemon?> getPokemon(int id) {
-    // TODO: implement getPokemon
-    throw UnimplementedError();
+  Future<Pokemon?> getPokemon(int id) async {
+    final filas = await db.customSelect(
+      '''
+    $consulta
+    WHERE p.id = ?
+    ORDER BY pt.slot
+    ''',
+      variables: [
+        Variable.withInt(id),
+      ],
+    ).get();
+
+    final resultado = convertir(filas);
+
+    if (resultado.isEmpty) {
+      return null;
+    }
+
+    return resultado.first;
   }
 }
