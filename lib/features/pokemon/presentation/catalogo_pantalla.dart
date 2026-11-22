@@ -269,14 +269,38 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
                     ),
                     DropdownMenuItem(
                       value: OrdenPokemon.totalBase,
-                      child: Text('Total base ↓'),
+                      child: Text('Total base'),
                     ),
+
                   ],
                   onChanged: (orden) {
                     if (orden != null) {
                       ref
                           .read(filtrosCatalogoProvider.notifier)
                           .cambiarOrden(orden);
+                    }
+                  },
+                ),
+
+                const SizedBox(width: 8),
+
+                DropdownButton<bool>(
+                  value: filtros.ascendente,
+                  items: const [
+                    DropdownMenuItem(
+                      value: true,
+                      child: Text('Asc ↑'),
+                    ),
+                    DropdownMenuItem(
+                      value: false,
+                      child: Text('Desc ↓'),
+                    ),
+                  ],
+                  onChanged: (valor) {
+                    if (valor != null) {
+                      ref
+                          .read(filtrosCatalogoProvider.notifier)
+                          .cambiarDireccion(valor);
                     }
                   },
                 ),

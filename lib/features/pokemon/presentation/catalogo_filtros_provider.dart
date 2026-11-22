@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/features/pokemon/domain/pokemon_orden.dart';
+import 'package:pokedex/graphql/__generated__/schema.ast.gql.dart';
 
 // IDs oficiales de tipos utilizados por PokeAPI.
 const tiposPokemon = <int, String>{
@@ -27,10 +28,12 @@ const tiposPokemon = <int, String>{
 class FiltrosCatalogo {
   final int? tipoId;
   final OrdenPokemon orden;
+  final bool ascendente;
 
   const FiltrosCatalogo({
     this.tipoId,
     this.orden = OrdenPokemon.numero,
+    this.ascendente = true,
   });
 }
 
@@ -45,6 +48,7 @@ class FiltrosCatalogoNotifier extends Notifier<FiltrosCatalogo> {
     state = FiltrosCatalogo(
       tipoId: tipoId,
       orden: state.orden,
+      ascendente: state.ascendente,
     );
   }
 
@@ -52,8 +56,18 @@ class FiltrosCatalogoNotifier extends Notifier<FiltrosCatalogo> {
     state = FiltrosCatalogo(
       tipoId: state.tipoId,
       orden: orden,
+      ascendente: orden != OrdenPokemon.totalBase,
     );
   }
+
+  void cambiarDireccion(bool ascendente) {
+    state = FiltrosCatalogo(
+      tipoId: state.tipoId,
+      orden: state.orden,
+      ascendente: ascendente
+    );
+  }
+
 
   void limpiar() {
     state = const FiltrosCatalogo();

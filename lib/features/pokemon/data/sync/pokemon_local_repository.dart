@@ -103,11 +103,16 @@ class PokemonLocalRepository implements PokemonRepository {
     String search = '',
     int? tipoId,
     OrdenPokemon orden = OrdenPokemon.numero,
+    bool ascendente=true,
   }) {
+
+    // Elegir ASC o DESC.
+    final direccion = ascendente ? 'ASC' : 'DESC';
+
     // Elegir la ordenacion solicitada.
     final ordenSql = switch (orden) {
-      OrdenPokemon.numero => 'p.national_dex_number ASC, p.id ASC',
-      OrdenPokemon.nombre => 'LOWER(p.name) ASC, p.id ASC',
+      OrdenPokemon.numero => 'p.national_dex_number $direccion, p.id ASC',
+      OrdenPokemon.nombre => 'LOWER(p.name) $direccion, p.id ASC',
       OrdenPokemon.totalBase => '''
       CASE
         WHEN ps.pokemon_id IS NULL THEN 1
@@ -120,7 +125,7 @@ class PokemonLocalRepository implements PokemonRepository {
         ps.special_attack +
         ps.special_defense +
         ps.speed
-      ) DESC,
+      ) $direccion,
       p.national_dex_number ASC,
       p.id ASC
     ''',

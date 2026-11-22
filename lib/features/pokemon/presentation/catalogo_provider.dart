@@ -40,6 +40,7 @@ final catalogoStreamProvider =
       search: search.trim(),
       tipoId: filtros.tipoId,
       orden: filtros.orden,
+      ascendente: filtros.ascendente,
     );
   },
   retry: (retryCount, error) => null,

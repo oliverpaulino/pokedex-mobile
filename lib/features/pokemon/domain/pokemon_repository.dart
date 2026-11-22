@@ -7,6 +7,7 @@ abstract class PokemonRepository {
     String search = '',
     int? tipoId,
     OrdenPokemon orden = OrdenPokemon.numero,
+    bool ascendente = true,
   });
 
   Future<Pokemon?> getPokemon(int id);
