@@ -30,6 +30,9 @@ class Pokemon {
   final String? imageUrl;
   final List<PokemonType> types;
   final PokemonBaseStats? baseStats;
+  final int? speciesId;
+  final String? speciesName;
+  final int? generationId;
 
   const Pokemon({
     required this.id,
@@ -38,5 +41,8 @@ class Pokemon {
     required this.types,
     this.imageUrl,
     this.baseStats,
+    this.speciesId,
+    this.speciesName,
+    this.generationId,
   });
 }

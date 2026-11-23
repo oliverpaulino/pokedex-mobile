@@ -1,7 +1,4 @@
 import 'dart:convert';
-
-import 'package:drift/drift.dart';
-
 import '../../../../core/database/app_database.dart';
 import '../../domain/pokemon_orden.dart';
 
@@ -11,12 +8,14 @@ class PreferenciasCatalogo {
   final int? tipoId;
   final OrdenPokemon orden;
   final bool ascendente;
+  final int? generacionId;
 
   const PreferenciasCatalogo({
     this.busqueda = '',
     this.tipoId,
     this.orden = OrdenPokemon.numero,
     this.ascendente = true,
+    this.generacionId,
   });
 }
 
@@ -44,6 +43,7 @@ class CatalogoPreferenciasStore {
 
       final nombreOrden = datos['orden'];
       final tipo = datos['tipoId'];
+      final generacion = datos['generacionId'];
 
       final orden = OrdenPokemon.values.firstWhere(
         (opcion) => opcion.name == nombreOrden,
@@ -55,6 +55,11 @@ class CatalogoPreferenciasStore {
             datos['busqueda'] is String ? datos['busqueda'] as String : '',
         tipoId: tipo is int && tipo >= 1 && tipo <= 18 ? tipo : null,
         orden: orden,
+        generacionId: generacion is int &&
+            generacion >= 1 &&
+            generacion <= 9
+            ? generacion
+            : null,
         ascendente:
             datos['ascendente'] is bool ? datos['ascendente'] as bool : true,
       );
@@ -71,6 +76,7 @@ class CatalogoPreferenciasStore {
       'tipoId': preferencias.tipoId,
       'orden': preferencias.orden.name,
       'ascendente': preferencias.ascendente,
+      'generacionId': preferencias.generacionId,
     });
 
     await db.into(db.appSettings).insertOnConflictUpdate(

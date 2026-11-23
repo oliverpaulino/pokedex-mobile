@@ -102,8 +102,9 @@ class PokemonLocalRepository implements PokemonRepository {
   Stream<List<Pokemon>> watchPokemon({
     String search = '',
     int? tipoId,
+    int? generacionId,
     OrdenPokemon orden = OrdenPokemon.numero,
-    bool ascendente=true,
+    bool ascendente = true,
   }) {
 
     // Elegir ASC o DESC.
@@ -143,10 +144,23 @@ class PokemonLocalRepository implements PokemonRepository {
         )
       ''';
 
+
+    final filtroGeneracion = generacionId == null
+        ? ''
+        : '''
+      AND EXISTS (
+        SELECT 1
+        FROM pokemon_species s
+        WHERE s.id = p.species_id
+          AND s.generation_id = ?
+      )
+    ''';
+
     // Los valores se envian como parametros SQL.
     final variables = [
       Variable.withString('%${search.trim()}%'),
       if (tipoId != null) Variable.withInt(tipoId),
+      if (generacionId != null) Variable.withInt(generacionId),
     ];
 
     final sql = '''
@@ -158,6 +172,7 @@ class PokemonLocalRepository implements PokemonRepository {
     WHERE LOWER(p.name) LIKE LOWER(?)
 
     $filtroTipo
+    $filtroGeneracion
 
     ORDER BY $ordenSql, pt.slot ASC
   ''';
@@ -169,6 +184,7 @@ class PokemonLocalRepository implements PokemonRepository {
           readsFrom: {
             db.pokemons,
             db.types,
+            db.pokemonSpecies,
             db.pokemonTypes,
             db.pokemonStats,
           },
@@ -185,12 +201,49 @@ class PokemonLocalRepository implements PokemonRepository {
     await db.transaction(() async {
       for (final pokemon in pokemons) {
         // Insertar o actualizar el Pokemon.
+
+
+        final speciesId = pokemon.speciesId;
+        final speciesName = pokemon.speciesName;
+
+// Guardar la especie antes del Pokemon, por la clave foranea.
+        if (speciesId != null &&
+            speciesName != null &&
+            speciesName.isNotEmpty) {
+          await db.into(db.pokemonSpecies).insert(
+            PokemonSpeciesCompanion.insert(
+              id: Value(speciesId),
+              name: speciesName,
+              generationId: Value(pokemon.generationId),
+            ),
+            mode: InsertMode.insertOrIgnore,
+          );
+
+          // Actualizar solo la generacion para no borrar
+          // los demas datos de la especie.
+          if (pokemon.generationId != null) {
+            await (db.update(db.pokemonSpecies)
+              ..where((tabla) => tabla.id.equals(speciesId)))
+                .write(
+              PokemonSpeciesCompanion(
+                generationId: Value(pokemon.generationId),
+              ),
+            );
+          }
+        }
+
+
         await db.into(db.pokemons).insertOnConflictUpdate(
               PokemonsCompanion.insert(
                 id: Value(pokemon.id),
                 nationalDexNumber: pokemon.number,
                 name: pokemon.name,
                 imageUrl: Value(pokemon.imageUrl),
+                speciesId: speciesId != null &&
+                    speciesName != null &&
+                    speciesName.isNotEmpty
+                    ? Value(speciesId)
+                    : const Value.absent(),
                 updatedAt: Value(DateTime.now()),
               ),
             );

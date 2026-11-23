@@ -32,6 +32,9 @@ class PokemonMapper {
               specialDefense: stats.specialDefense,
               speed: stats.speed,
             ),
+      speciesId: dto.speciesId,
+      speciesName: dto.speciesName,
+      generationId: dto.generationId,
     );
   }
 

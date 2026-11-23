@@ -26,6 +26,9 @@ class PokemonDto {
   final String? artworkUrl;
   final String? frontUrl;
   final CatalogPokemonStatsDto? stats;
+  final int? speciesId;
+  final String? speciesName;
+  final int? generationId;
 
   const PokemonDto({
     required this.id,
@@ -34,6 +37,9 @@ class PokemonDto {
     this.artworkUrl,
     this.frontUrl,
     this.stats,
+    this.speciesId,
+    this.speciesName,
+    this.generationId,
   });
 
   factory PokemonDto.fromGraphql(GPokemonCatalogData_pokemon data) {
@@ -60,6 +66,9 @@ class PokemonDto {
       artworkUrl: _cleanUrl(sprites?.artwork.value),
       frontUrl: _cleanUrl(sprites?.front.value),
       stats: CatalogPokemonStatsDto.fromGraphql(data.stats),
+      speciesId: data.species?.id,
+      speciesName: data.species?.name,
+      generationId: data.species?.generation_id,
     );
   }
 

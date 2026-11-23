@@ -6,6 +6,7 @@ abstract class PokemonRepository {
   Stream<List<Pokemon>> watchPokemon({
     String search = '',
     int? tipoId,
+    int? generacionId,
     OrdenPokemon orden = OrdenPokemon.numero,
     bool ascendente = true,
   });

@@ -57,6 +57,7 @@ abstract class GPokemonCatalogData_pokemon
   String get G__typename;
   int get id;
   String get name;
+  GPokemonCatalogData_pokemon_species? get species;
   BuiltList<GPokemonCatalogData_pokemon_stats> get stats;
   BuiltList<GPokemonCatalogData_pokemon_pokemontypes> get pokemontypes;
   BuiltList<GPokemonCatalogData_pokemon_pokemonsprites> get pokemonsprites;
@@ -71,6 +72,41 @@ abstract class GPokemonCatalogData_pokemon
   static GPokemonCatalogData_pokemon? fromJson(Map<String, dynamic> json) =>
       _i1.serializers.deserializeWith(
         GPokemonCatalogData_pokemon.serializer,
+        json,
+      );
+}
+
+abstract class GPokemonCatalogData_pokemon_species
+    implements
+        Built<GPokemonCatalogData_pokemon_species,
+            GPokemonCatalogData_pokemon_speciesBuilder> {
+  GPokemonCatalogData_pokemon_species._();
+
+  factory GPokemonCatalogData_pokemon_species(
+      [void Function(GPokemonCatalogData_pokemon_speciesBuilder b)
+          updates]) = _$GPokemonCatalogData_pokemon_species;
+
+  static void _initializeBuilder(
+          GPokemonCatalogData_pokemon_speciesBuilder b) =>
+      b..G__typename = 'pokemonspecies';
+
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  int get id;
+  String get name;
+  int? get generation_id;
+  static Serializer<GPokemonCatalogData_pokemon_species> get serializer =>
+      _$gPokemonCatalogDataPokemonSpeciesSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GPokemonCatalogData_pokemon_species.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GPokemonCatalogData_pokemon_species? fromJson(
+          Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GPokemonCatalogData_pokemon_species.serializer,
         json,
       );
 }

@@ -83,7 +83,9 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
     final busqueda = filtros.busqueda;
     final estado = ref.watch(catalogoStateProvider(busqueda));
 
-    final hayFiltrosActivos = busqueda.isNotEmpty || filtros.tipoId != null;
+    final hayFiltrosActivos = busqueda.isNotEmpty ||
+        filtros.tipoId != null ||
+        filtros.generacionId != null;
     final carga = ref.watch(catalogLoadStatusProvider);
 
 // Solo sabemos que el catálogo se completó cuando
@@ -107,7 +109,7 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
             Text(
               hayFiltrosActivos
                   ? 'No hay coincidencias entre los Pokémon descargados '
-                      'para esta búsqueda o estos filtros.'
+                  'para esta búsqueda o estos filtros.'
                   : 'Todavía no hay Pokémon guardados',
               textAlign: TextAlign.center,
             ),
@@ -160,14 +162,14 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
                 height: 60,
                 child: pokemon.imageUrl != null && pokemon.imageUrl!.isNotEmpty
                     ? CachedNetworkImage(
-                        imageUrl: pokemon.imageUrl!,
-                        fit: BoxFit.contain,
-                        placeholder: (context, url) => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.catching_pokemon),
-                      )
+                  imageUrl: pokemon.imageUrl!,
+                  fit: BoxFit.contain,
+                  placeholder: (context, url) => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  errorWidget: (context, url, error) =>
+                  const Icon(Icons.catching_pokemon),
+                )
                     : const Icon(Icons.catching_pokemon),
               ),
               title: Text(
@@ -216,150 +218,176 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
       ),
       body: !_preferenciasListas
           ? const Center(
-              child: CircularProgressIndicator(),
-            )
+        child: CircularProgressIndicator(),
+      )
           : Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: TextField(
+              controller: _busquedaController,
+              decoration: const InputDecoration(
+                hintText: 'Buscar Pokémon',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: _buscarPokemon,
+            ),
+          ),
+          if (catalogoIncompleto)
+            const Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 8,
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Catálogo local incompleto. '
+                          'Solo se muestran los Pokémon descargados.',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          SizedBox(
+            height: 60,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: TextField(
-                    controller: _busquedaController,
-                    decoration: const InputDecoration(
-                      hintText: 'Buscar Pokémon',
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(),
+                // Elegir el tipo.
+                DropdownButton<int?>(
+                  value: filtros.tipoId,
+                  hint: const Text('Todos los tipos'),
+                  items: [
+                    const DropdownMenuItem<int?>(
+                      value: null,
+                      child: Text('Todos los tipos'),
                     ),
-                    onChanged: _buscarPokemon,
-                  ),
+                    ...tiposPokemon.entries.map(
+                          (tipo) => DropdownMenuItem<int?>(
+                        value: tipo.key,
+                        child: Text(tipo.value),
+                      ),
+                    ),
+                  ],
+                  onChanged: (tipoId) {
+                    ref
+                        .read(filtrosCatalogoProvider.notifier)
+                        .cambiarTipo(tipoId);
+                  },
                 ),
-                if (catalogoIncompleto)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
+
+                const SizedBox(width: 16),
+
+                // Elegir la generacion.
+                DropdownButton<int?>(
+                  value: filtros.generacionId,
+                  hint: const Text('Todas las gen.'),
+                  items: [
+                    const DropdownMenuItem<int?>(
+                      value: null,
+                      child: Text('Todas las gen.'),
                     ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.info_outline),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Catálogo local incompleto. '
-                            'Solo se muestran los Pokémon descargados.',
-                          ),
-                        ),
-                      ],
+                    ...List.generate(
+                      9,
+                          (index) => DropdownMenuItem<int?>(
+                        value: index + 1,
+                        child: Text('Generación ${index + 1}'),
+                      ),
                     ),
-                  ),
-                SizedBox(
-                  height: 60,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    children: [
-                      // Elegir el tipo.
-                      DropdownButton<int?>(
-                        value: filtros.tipoId,
-                        hint: const Text('Todos los tipos'),
-                        items: [
-                          const DropdownMenuItem<int?>(
-                            value: null,
-                            child: Text('Todos los tipos'),
-                          ),
-                          ...tiposPokemon.entries.map(
-                            (tipo) => DropdownMenuItem<int?>(
-                              value: tipo.key,
-                              child: Text(tipo.value),
-                            ),
-                          ),
-                        ],
-                        onChanged: (tipoId) {
-                          ref
-                              .read(filtrosCatalogoProvider.notifier)
-                              .cambiarTipo(tipoId);
-                        },
-                      ),
-
-                      const SizedBox(width: 16),
-
-                      // Elegir el orden.
-                      DropdownButton<OrdenPokemon>(
-                        value: filtros.orden,
-                        items: const [
-                          DropdownMenuItem(
-                            value: OrdenPokemon.numero,
-                            child: Text('Número'),
-                          ),
-                          DropdownMenuItem(
-                            value: OrdenPokemon.nombre,
-                            child: Text('Nombre A-Z'),
-                          ),
-                          DropdownMenuItem(
-                            value: OrdenPokemon.totalBase,
-                            child: Text('Total base'),
-                          ),
-                        ],
-                        onChanged: (orden) {
-                          if (orden != null) {
-                            ref
-                                .read(filtrosCatalogoProvider.notifier)
-                                .cambiarOrden(orden);
-                          }
-                        },
-                      ),
-
-                      const SizedBox(width: 8),
-
-                      DropdownButton<bool>(
-                        value: filtros.ascendente,
-                        items: const [
-                          DropdownMenuItem(
-                            value: true,
-                            child: Text('Asc ↑'),
-                          ),
-                          DropdownMenuItem(
-                            value: false,
-                            child: Text('Desc ↓'),
-                          ),
-                        ],
-                        onChanged: (valor) {
-                          if (valor != null) {
-                            ref
-                                .read(filtrosCatalogoProvider.notifier)
-                                .cambiarDireccion(valor);
-                          }
-                        },
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      TextButton(
-                        onPressed: () {
-                          ref.read(filtrosCatalogoProvider.notifier).limpiar();
-                        },
-                        child: TextButton.icon(
-                          onPressed: () {
-                            // Evitar que una busqueda pendiente vuelva a aplicarse.
-                            _debounce?.cancel();
-
-                            // Borrar el texto visible.
-                            _busquedaController.clear();
-
-                            // Limpiar filtros y guardar los valores en SQLite.
-                            ref.read(filtrosCatalogoProvider.notifier).limpiar();
-                          },
-                          icon: const Icon(Icons.refresh),
-                          label: const Text('Limpiar'),
-                        ),
-                      ),
-                    ],
-                  ),
+                  ],
+                  onChanged: (generacionId) {
+                    ref
+                        .read(filtrosCatalogoProvider.notifier)
+                        .cambiarGeneracion(generacionId);
+                  },
                 ),
-                Expanded(
-                  child: contenido,
+
+                const SizedBox(width: 16),
+
+                // Elegir el orden.
+                DropdownButton<OrdenPokemon>(
+                  value: filtros.orden,
+                  items: const [
+                    DropdownMenuItem(
+                      value: OrdenPokemon.numero,
+                      child: Text('Número'),
+                    ),
+                    DropdownMenuItem(
+                      value: OrdenPokemon.nombre,
+                      child: Text('Nombre A-Z'),
+                    ),
+                    DropdownMenuItem(
+                      value: OrdenPokemon.totalBase,
+                      child: Text('Total base'),
+                    ),
+                  ],
+                  onChanged: (orden) {
+                    if (orden != null) {
+                      ref
+                          .read(filtrosCatalogoProvider.notifier)
+                          .cambiarOrden(orden);
+                    }
+                  },
+                ),
+
+                const SizedBox(width: 8),
+
+                DropdownButton<bool>(
+                  value: filtros.ascendente,
+                  items: const [
+                    DropdownMenuItem(
+                      value: true,
+                      child: Text('Asc ↑'),
+                    ),
+                    DropdownMenuItem(
+                      value: false,
+                      child: Text('Desc ↓'),
+                    ),
+                  ],
+                  onChanged: (valor) {
+                    if (valor != null) {
+                      ref
+                          .read(filtrosCatalogoProvider.notifier)
+                          .cambiarDireccion(valor);
+                    }
+                  },
+                ),
+
+                const SizedBox(width: 12),
+
+                TextButton(
+                  onPressed: () {
+                    ref.read(filtrosCatalogoProvider.notifier).limpiar();
+                  },
+                  child: TextButton.icon(
+                    onPressed: () {
+                      // Evitar que una busqueda pendiente vuelva a aplicarse.
+                      _debounce?.cancel();
+
+                      // Borrar el texto visible.
+                      _busquedaController.clear();
+
+                      // Limpiar filtros y guardar los valores en SQLite.
+                      ref.read(filtrosCatalogoProvider.notifier).limpiar();
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Limpiar'),
+                  ),
                 ),
               ],
             ),
+          ),
+          Expanded(
+            child: contenido,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -33,12 +33,14 @@ class FiltrosCatalogo {
   final int? tipoId;
   final OrdenPokemon orden;
   final bool ascendente;
+  final int? generacionId;
 
   const FiltrosCatalogo({
     this.busqueda = '',
     this.tipoId,
     this.orden = OrdenPokemon.numero,
     this.ascendente = true,
+    this.generacionId,
   });
 }
 
@@ -65,6 +67,7 @@ class FiltrosCatalogoNotifier extends Notifier<FiltrosCatalogo> {
       tipoId: guardadas.tipoId,
       orden: guardadas.orden,
       ascendente: guardadas.ascendente,
+      generacionId: guardadas.generacionId,
     );
   }
 
@@ -75,6 +78,7 @@ class FiltrosCatalogoNotifier extends Notifier<FiltrosCatalogo> {
         tipoId: state.tipoId,
         orden: state.orden,
         ascendente: state.ascendente,
+        generacionId: state.generacionId,
       ),
     );
   }
@@ -86,6 +90,7 @@ class FiltrosCatalogoNotifier extends Notifier<FiltrosCatalogo> {
         tipoId: tipoId,
         orden: state.orden,
         ascendente: state.ascendente,
+        generacionId: state.generacionId,
       ),
     );
   }
@@ -97,9 +102,22 @@ class FiltrosCatalogoNotifier extends Notifier<FiltrosCatalogo> {
         tipoId: state.tipoId,
         orden: orden,
         ascendente: orden != OrdenPokemon.totalBase,
+        generacionId: state.generacionId,
+    ));
+  }
+
+  void cambiarGeneracion(int? generacionId) {
+    _actualizar(
+      FiltrosCatalogo(
+        busqueda: state.busqueda,
+        tipoId: state.tipoId,
+        generacionId: generacionId,
+        orden: state.orden,
+        ascendente: state.ascendente,
       ),
     );
   }
+
 
   void cambiarDireccion(bool ascendente) {
     _actualizar(
@@ -107,6 +125,7 @@ class FiltrosCatalogoNotifier extends Notifier<FiltrosCatalogo> {
         busqueda: state.busqueda,
         tipoId: state.tipoId,
         orden: state.orden,
+        generacionId: state.generacionId,
         ascendente: ascendente,
       ),
     );
@@ -128,6 +147,7 @@ class FiltrosCatalogoNotifier extends Notifier<FiltrosCatalogo> {
       tipoId: state.tipoId,
       orden: state.orden,
       ascendente: state.ascendente,
+      generacionId: state.generacionId,
     );
 
     final store = ref.read(catalogoPreferenciasStoreProvider);
