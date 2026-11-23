@@ -337,7 +337,20 @@ class _CatalogoPantallaState extends ConsumerState<CatalogoPantalla> {
                         onPressed: () {
                           ref.read(filtrosCatalogoProvider.notifier).limpiar();
                         },
-                        child: const Text('Limpiar'),
+                        child: TextButton.icon(
+                          onPressed: () {
+                            // Evitar que una busqueda pendiente vuelva a aplicarse.
+                            _debounce?.cancel();
+
+                            // Borrar el texto visible.
+                            _busquedaController.clear();
+
+                            // Limpiar filtros y guardar los valores en SQLite.
+                            ref.read(filtrosCatalogoProvider.notifier).limpiar();
+                          },
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Limpiar'),
+                        ),
                       ),
                     ],
                   ),

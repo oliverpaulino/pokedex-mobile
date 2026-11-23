@@ -115,7 +115,7 @@ class FiltrosCatalogoNotifier extends Notifier<FiltrosCatalogo> {
   void limpiar() {
     // Conservamos la busqueda, como hacia el boton anterior.
     _actualizar(
-      FiltrosCatalogo(busqueda: state.busqueda),
+      const FiltrosCatalogo()
     );
   }
 
