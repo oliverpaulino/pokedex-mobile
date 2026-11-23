@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pokedex/features/pokemon/domain/pokemon_orden.dart';
-import 'package:pokedex/graphql/__generated__/schema.ast.gql.dart';
 
-// IDs oficiales de tipos utilizados por PokeAPI.
+import '../../../app/providers.dart';
+import '../data/sync/catalogo_preferencias_store.dart';
+import '../domain/pokemon_orden.dart';
+
+// IDs de tipos utilizados por PokeAPI.
 const tiposPokemon = <int, String>{
   1: 'Normal',
   2: 'Fighting',
@@ -24,53 +27,118 @@ const tiposPokemon = <int, String>{
   18: 'Fairy',
 };
 
-// Las opciones seleccionadas.
+// Estado de las preferencias del catalogo.
 class FiltrosCatalogo {
+  final String busqueda;
   final int? tipoId;
   final OrdenPokemon orden;
   final bool ascendente;
 
   const FiltrosCatalogo({
+    this.busqueda = '',
     this.tipoId,
     this.orden = OrdenPokemon.numero,
     this.ascendente = true,
   });
 }
 
-// Permite cambiar los filtros desde Flutter.
 class FiltrosCatalogoNotifier extends Notifier<FiltrosCatalogo> {
+  Future<void>? _carga;
+  Future<void> _ultimoGuardado = Future<void>.value();
+
   @override
   FiltrosCatalogo build() {
     return const FiltrosCatalogo();
   }
 
-  void cambiarTipo(int? tipoId) {
+  // Restaurar las preferencias de SQLite una sola vez.
+  Future<void> cargar() {
+    return _carga ??= _cargarDesdeSQLite();
+  }
+
+  Future<void> _cargarDesdeSQLite() async {
+    final guardadas =
+        await ref.read(catalogoPreferenciasStoreProvider).cargar();
+
     state = FiltrosCatalogo(
-      tipoId: tipoId,
-      orden: state.orden,
-      ascendente: state.ascendente,
+      busqueda: guardadas.busqueda,
+      tipoId: guardadas.tipoId,
+      orden: guardadas.orden,
+      ascendente: guardadas.ascendente,
+    );
+  }
+
+  void cambiarBusqueda(String busqueda) {
+    _actualizar(
+      FiltrosCatalogo(
+        busqueda: busqueda,
+        tipoId: state.tipoId,
+        orden: state.orden,
+        ascendente: state.ascendente,
+      ),
+    );
+  }
+
+  void cambiarTipo(int? tipoId) {
+    _actualizar(
+      FiltrosCatalogo(
+        busqueda: state.busqueda,
+        tipoId: tipoId,
+        orden: state.orden,
+        ascendente: state.ascendente,
+      ),
     );
   }
 
   void cambiarOrden(OrdenPokemon orden) {
-    state = FiltrosCatalogo(
-      tipoId: state.tipoId,
-      orden: orden,
-      ascendente: orden != OrdenPokemon.totalBase,
+    _actualizar(
+      FiltrosCatalogo(
+        busqueda: state.busqueda,
+        tipoId: state.tipoId,
+        orden: orden,
+        ascendente: orden != OrdenPokemon.totalBase,
+      ),
     );
   }
 
   void cambiarDireccion(bool ascendente) {
-    state = FiltrosCatalogo(
-      tipoId: state.tipoId,
-      orden: state.orden,
-      ascendente: ascendente
+    _actualizar(
+      FiltrosCatalogo(
+        busqueda: state.busqueda,
+        tipoId: state.tipoId,
+        orden: state.orden,
+        ascendente: ascendente,
+      ),
     );
   }
 
-
   void limpiar() {
-    state = const FiltrosCatalogo();
+    // Conservamos la busqueda, como hacia el boton anterior.
+    _actualizar(
+      FiltrosCatalogo(busqueda: state.busqueda),
+    );
+  }
+
+  // Actualizar Riverpod y guardar en SQLite.
+  void _actualizar(FiltrosCatalogo nuevosFiltros) {
+    state = nuevosFiltros;
+
+    final preferencias = PreferenciasCatalogo(
+      busqueda: state.busqueda,
+      tipoId: state.tipoId,
+      orden: state.orden,
+      ascendente: state.ascendente,
+    );
+
+    final store = ref.read(catalogoPreferenciasStoreProvider);
+
+    // Las escrituras se realizan en el mismo orden
+    // en que el usuario cambia las preferencias.
+    _ultimoGuardado = _ultimoGuardado
+        .then((_) => store.guardar(preferencias))
+        .catchError((Object error, StackTrace stackTrace) {
+      debugPrint('Error guardando preferencias: $error');
+    });
   }
 }
 
