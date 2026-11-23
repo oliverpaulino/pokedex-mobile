@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pokedex/features/pokemon/data/sync/catalogo_preferencias_store.dart';
 
 import '../core/database/app_database.dart';
 import '../features/pokemon/data/sync/catalog_load_store.dart';
@@ -26,6 +27,12 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
   return db;
 });
 
+final catalogoPreferenciasStoreProvider =
+    Provider<CatalogoPreferenciasStore>((ref) {
+  final db = ref.watch(appDatabaseProvider);
+
+  return CatalogoPreferenciasStore(db);
+});
 // Repositorio utilizado para consultar los Pokemon.
 final pokemonRepositoryProvider = Provider<PokemonRepository>((ref) {
   final db = ref.watch(appDatabaseProvider);

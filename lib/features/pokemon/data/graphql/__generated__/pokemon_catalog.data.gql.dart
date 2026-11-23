@@ -57,6 +57,8 @@ abstract class GPokemonCatalogData_pokemon
   String get G__typename;
   int get id;
   String get name;
+  GPokemonCatalogData_pokemon_species? get species;
+  BuiltList<GPokemonCatalogData_pokemon_stats> get stats;
   BuiltList<GPokemonCatalogData_pokemon_pokemontypes> get pokemontypes;
   BuiltList<GPokemonCatalogData_pokemon_pokemonsprites> get pokemonsprites;
   static Serializer<GPokemonCatalogData_pokemon> get serializer =>
@@ -70,6 +72,107 @@ abstract class GPokemonCatalogData_pokemon
   static GPokemonCatalogData_pokemon? fromJson(Map<String, dynamic> json) =>
       _i1.serializers.deserializeWith(
         GPokemonCatalogData_pokemon.serializer,
+        json,
+      );
+}
+
+abstract class GPokemonCatalogData_pokemon_species
+    implements
+        Built<GPokemonCatalogData_pokemon_species,
+            GPokemonCatalogData_pokemon_speciesBuilder> {
+  GPokemonCatalogData_pokemon_species._();
+
+  factory GPokemonCatalogData_pokemon_species(
+      [void Function(GPokemonCatalogData_pokemon_speciesBuilder b)
+          updates]) = _$GPokemonCatalogData_pokemon_species;
+
+  static void _initializeBuilder(
+          GPokemonCatalogData_pokemon_speciesBuilder b) =>
+      b..G__typename = 'pokemonspecies';
+
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  int get id;
+  String get name;
+  int? get generation_id;
+  static Serializer<GPokemonCatalogData_pokemon_species> get serializer =>
+      _$gPokemonCatalogDataPokemonSpeciesSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GPokemonCatalogData_pokemon_species.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GPokemonCatalogData_pokemon_species? fromJson(
+          Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GPokemonCatalogData_pokemon_species.serializer,
+        json,
+      );
+}
+
+abstract class GPokemonCatalogData_pokemon_stats
+    implements
+        Built<GPokemonCatalogData_pokemon_stats,
+            GPokemonCatalogData_pokemon_statsBuilder> {
+  GPokemonCatalogData_pokemon_stats._();
+
+  factory GPokemonCatalogData_pokemon_stats(
+          [void Function(GPokemonCatalogData_pokemon_statsBuilder b) updates]) =
+      _$GPokemonCatalogData_pokemon_stats;
+
+  static void _initializeBuilder(GPokemonCatalogData_pokemon_statsBuilder b) =>
+      b..G__typename = 'pokemonstat';
+
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  int get base_stat;
+  GPokemonCatalogData_pokemon_stats_stat? get stat;
+  static Serializer<GPokemonCatalogData_pokemon_stats> get serializer =>
+      _$gPokemonCatalogDataPokemonStatsSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GPokemonCatalogData_pokemon_stats.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GPokemonCatalogData_pokemon_stats? fromJson(
+          Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GPokemonCatalogData_pokemon_stats.serializer,
+        json,
+      );
+}
+
+abstract class GPokemonCatalogData_pokemon_stats_stat
+    implements
+        Built<GPokemonCatalogData_pokemon_stats_stat,
+            GPokemonCatalogData_pokemon_stats_statBuilder> {
+  GPokemonCatalogData_pokemon_stats_stat._();
+
+  factory GPokemonCatalogData_pokemon_stats_stat(
+      [void Function(GPokemonCatalogData_pokemon_stats_statBuilder b)
+          updates]) = _$GPokemonCatalogData_pokemon_stats_stat;
+
+  static void _initializeBuilder(
+          GPokemonCatalogData_pokemon_stats_statBuilder b) =>
+      b..G__typename = 'stat';
+
+  @BuiltValueField(wireName: '__typename')
+  String get G__typename;
+  String get name;
+  static Serializer<GPokemonCatalogData_pokemon_stats_stat> get serializer =>
+      _$gPokemonCatalogDataPokemonStatsStatSerializer;
+
+  Map<String, dynamic> toJson() => (_i1.serializers.serializeWith(
+        GPokemonCatalogData_pokemon_stats_stat.serializer,
+        this,
+      ) as Map<String, dynamic>);
+
+  static GPokemonCatalogData_pokemon_stats_stat? fromJson(
+          Map<String, dynamic> json) =>
+      _i1.serializers.deserializeWith(
+        GPokemonCatalogData_pokemon_stats_stat.serializer,
         json,
       );
 }

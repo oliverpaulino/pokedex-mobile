@@ -8,6 +8,8 @@ import 'package:pokedex/core/database/app_database.dart'
 import 'package:pokedex/features/pokemon/data/sync/pokemon_local_repository.dart';
 import 'package:pokedex/features/pokemon/domain/entities.dart';
 import 'package:pokedex/features/pokemon/domain/failures.dart';
+import 'package:drift/drift.dart' hide isNotNull;
+import 'package:pokedex/features/pokemon/domain/pokemon_orden.dart';
 
 void main() {
   late AppDatabase db;
@@ -174,5 +176,155 @@ void main() {
     expect(iterator.current.first.name, 'Pikachu');
 
     await iterator.cancel();
+  });
+
+  test('Filtra por tipo y conserva ambos tipos', () async {
+    const charizard = Pokemon(
+      id: 6,
+      number: 6,
+      name: 'charizard',
+      types: [
+        PokemonType(id: 10, name: 'fire'),
+        PokemonType(id: 3, name: 'flying'),
+      ],
+    );
+
+    const squirtle = Pokemon(
+      id: 7,
+      number: 7,
+      name: 'squirtle',
+      types: [
+        PokemonType(id: 11, name: 'water'),
+      ],
+    );
+
+    await repositorio.savePokemon([charizard, squirtle]);
+
+    final resultado = await repositorio.watchPokemon(tipoId: 10).first;
+
+    expect(resultado.length, 1);
+    expect(resultado.first.name, 'charizard');
+
+    // Charizard conserva Fire y Flying.
+    expect(
+      resultado.first.types.map((tipo) => tipo.name).toSet(),
+      {'fire', 'flying'},
+    );
+
+    // Tambien se puede combinar busqueda y filtro.
+    final combinado = await repositorio
+        .watchPokemon(
+          search: 'char',
+          tipoId: 10,
+        )
+        .first;
+
+    expect(combinado.length, 1);
+  });
+
+  test('Ordena por numero y nombre', () async {
+    const zubat = Pokemon(
+      id: 41,
+      number: 41,
+      name: 'zubat',
+      types: [PokemonType(id: 3, name: 'flying')],
+    );
+
+    const abra = Pokemon(
+      id: 63,
+      number: 63,
+      name: 'abra',
+      types: [PokemonType(id: 14, name: 'psychic')],
+    );
+
+    await repositorio.savePokemon([zubat, abra]);
+
+    final porNumero = await repositorio
+        .watchPokemon(
+          orden: OrdenPokemon.numero,
+        )
+        .first;
+
+    final porNombre = await repositorio
+        .watchPokemon(
+          orden: OrdenPokemon.nombre,
+        )
+        .first;
+
+    expect(
+      porNumero.map((p) => p.name).toList(),
+      ['zubat', 'abra'],
+    );
+
+    expect(
+      porNombre.map((p) => p.name).toList(),
+      ['abra', 'zubat'],
+    );
+  });
+
+  test('Ordena por total base y deja datos faltantes al final', () async {
+    const charizard = Pokemon(
+      id: 6,
+      number: 6,
+      name: 'charizard',
+      types: [PokemonType(id: 10, name: 'fire')],
+    );
+
+    const bulbasaur = Pokemon(
+      id: 1,
+      number: 1,
+      name: 'bulbasaur',
+      types: [PokemonType(id: 12, name: 'grass')],
+    );
+
+    const squirtle = Pokemon(
+      id: 7,
+      number: 7,
+      name: 'squirtle',
+      types: [PokemonType(id: 11, name: 'water')],
+    );
+
+    await repositorio.savePokemon([
+      charizard,
+      bulbasaur,
+      squirtle,
+    ]);
+
+    await db.into(db.pokemonStats).insert(
+          PokemonStatsCompanion.insert(
+            pokemonId: const Value(6),
+            hp: 78,
+            attack: 84,
+            defense: 78,
+            specialAttack: 109,
+            specialDefense: 85,
+            speed: 100,
+          ),
+        );
+
+    await db.into(db.pokemonStats).insert(
+          PokemonStatsCompanion.insert(
+            pokemonId: const Value(1),
+            hp: 45,
+            attack: 49,
+            defense: 49,
+            specialAttack: 65,
+            specialDefense: 65,
+            speed: 45,
+          ),
+        );
+
+    final resultado = await repositorio
+        .watchPokemon(
+          orden: OrdenPokemon.totalBase,
+        )
+        .first;
+
+    // Charizard: 534; Bulbasaur: 318.
+    // Squirtle no tiene estadisticas guardadas.
+    expect(
+      resultado.map((p) => p.name).toList(),
+      ['charizard', 'bulbasaur', 'squirtle'],
+    );
   });
 }

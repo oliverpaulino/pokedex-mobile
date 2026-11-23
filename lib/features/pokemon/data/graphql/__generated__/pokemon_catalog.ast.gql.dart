@@ -83,6 +83,75 @@ const PokemonCatalog = _i1.OperationDefinitionNode(
           selectionSet: null,
         ),
         _i1.FieldNode(
+          name: _i1.NameNode(value: 'pokemonspecy'),
+          alias: _i1.NameNode(value: 'species'),
+          arguments: [],
+          directives: [],
+          selectionSet: _i1.SelectionSetNode(selections: [
+            _i1.FieldNode(
+              name: _i1.NameNode(value: 'id'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            _i1.FieldNode(
+              name: _i1.NameNode(value: 'name'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            _i1.FieldNode(
+              name: _i1.NameNode(value: 'generation_id'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+          ]),
+        ),
+        _i1.FieldNode(
+          name: _i1.NameNode(value: 'pokemonstats'),
+          alias: _i1.NameNode(value: 'stats'),
+          arguments: [
+            _i1.ArgumentNode(
+              name: _i1.NameNode(value: 'order_by'),
+              value: _i1.ObjectValueNode(fields: [
+                _i1.ObjectFieldNode(
+                  name: _i1.NameNode(value: 'stat_id'),
+                  value: _i1.EnumValueNode(name: _i1.NameNode(value: 'asc')),
+                )
+              ]),
+            )
+          ],
+          directives: [],
+          selectionSet: _i1.SelectionSetNode(selections: [
+            _i1.FieldNode(
+              name: _i1.NameNode(value: 'base_stat'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            _i1.FieldNode(
+              name: _i1.NameNode(value: 'stat'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: _i1.SelectionSetNode(selections: [
+                _i1.FieldNode(
+                  name: _i1.NameNode(value: 'name'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                )
+              ]),
+            ),
+          ]),
+        ),
+        _i1.FieldNode(
           name: _i1.NameNode(value: 'pokemontypes'),
           alias: null,
           arguments: [

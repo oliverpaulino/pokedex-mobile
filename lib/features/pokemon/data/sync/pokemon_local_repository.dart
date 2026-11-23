@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:pokedex/features/pokemon/domain/pokemon_orden.dart';
 
 import '../../../../core/database/app_database.dart' hide Pokemon, PokemonType;
 import '../../domain/entities.dart';
@@ -97,52 +98,99 @@ class PokemonLocalRepository implements PokemonRepository {
       ON pt.type_id = t.id
   ''';
 
-  // Observar el catalogo desde SQLite.
   @override
   Stream<List<Pokemon>> watchPokemon({
     String search = '',
+    int? tipoId,
+    int? generacionId,
+    OrdenPokemon orden = OrdenPokemon.numero,
+    bool ascendente = true,
   }) {
+
+    // Elegir ASC o DESC.
+    final direccion = ascendente ? 'ASC' : 'DESC';
+
+    // Elegir la ordenacion solicitada.
+    final ordenSql = switch (orden) {
+      OrdenPokemon.numero => 'p.national_dex_number $direccion, p.id ASC',
+      OrdenPokemon.nombre => 'LOWER(p.name) $direccion, p.id ASC',
+      OrdenPokemon.totalBase => '''
+      CASE
+        WHEN ps.pokemon_id IS NULL THEN 1
+        ELSE 0
+      END ASC,
+      (
+        ps.hp +
+        ps.attack +
+        ps.defense +
+        ps.special_attack +
+        ps.special_defense +
+        ps.speed
+      ) $direccion,
+      p.national_dex_number ASC,
+      p.id ASC
+    ''',
+    };
+
+    // Filtrar por tipo solo cuando se selecciono alguno.
+    final filtroTipo = tipoId == null
+        ? ''
+        : '''
+        AND EXISTS (
+          SELECT 1
+          FROM pokemon_type pt_filtro
+          WHERE pt_filtro.pokemon_id = p.id
+            AND pt_filtro.type_id = ?
+        )
+      ''';
+
+
+    final filtroGeneracion = generacionId == null
+        ? ''
+        : '''
+      AND EXISTS (
+        SELECT 1
+        FROM pokemon_species s
+        WHERE s.id = p.species_id
+          AND s.generation_id = ?
+      )
+    ''';
+
+    // Los valores se envian como parametros SQL.
+    final variables = [
+      Variable.withString('%${search.trim()}%'),
+      if (tipoId != null) Variable.withInt(tipoId),
+      if (generacionId != null) Variable.withInt(generacionId),
+    ];
+
+    final sql = '''
+    $consulta
+
+    LEFT JOIN pokemon_stats ps
+      ON ps.pokemon_id = p.id
+
+    WHERE LOWER(p.name) LIKE LOWER(?)
+
+    $filtroTipo
+    $filtroGeneracion
+
+    ORDER BY $ordenSql, pt.slot ASC
+  ''';
+
     return db
         .customSelect(
-          '''
-      $consulta
-      WHERE p.name LIKE ?
-      ORDER BY p.national_dex_number, pt.slot
-      ''',
-          variables: [
-            Variable.withString('%${search.trim()}%'),
-          ],
+          sql,
+          variables: variables,
           readsFrom: {
             db.pokemons,
             db.types,
+            db.pokemonSpecies,
             db.pokemonTypes,
+            db.pokemonStats,
           },
         )
         .watch()
         .map(convertir);
-  }
-
-  // Buscar un Pokemon por ID.
-  @override
-  Future<Pokemon?> getPokemon(int id) async {
-    final filas = await db.customSelect(
-      '''
-      $consulta
-      WHERE p.id = ?
-      ORDER BY pt.slot
-      ''',
-      variables: [
-        Variable.withInt(id),
-      ],
-    ).get();
-
-    final resultado = convertir(filas);
-
-    if (resultado.isEmpty) {
-      return null;
-    }
-
-    return resultado.first;
   }
 
   // Guardar o actualizar sin duplicados.
@@ -153,12 +201,49 @@ class PokemonLocalRepository implements PokemonRepository {
     await db.transaction(() async {
       for (final pokemon in pokemons) {
         // Insertar o actualizar el Pokemon.
+
+
+        final speciesId = pokemon.speciesId;
+        final speciesName = pokemon.speciesName;
+
+// Guardar la especie antes del Pokemon, por la clave foranea.
+        if (speciesId != null &&
+            speciesName != null &&
+            speciesName.isNotEmpty) {
+          await db.into(db.pokemonSpecies).insert(
+            PokemonSpeciesCompanion.insert(
+              id: Value(speciesId),
+              name: speciesName,
+              generationId: Value(pokemon.generationId),
+            ),
+            mode: InsertMode.insertOrIgnore,
+          );
+
+          // Actualizar solo la generacion para no borrar
+          // los demas datos de la especie.
+          if (pokemon.generationId != null) {
+            await (db.update(db.pokemonSpecies)
+              ..where((tabla) => tabla.id.equals(speciesId)))
+                .write(
+              PokemonSpeciesCompanion(
+                generationId: Value(pokemon.generationId),
+              ),
+            );
+          }
+        }
+
+
         await db.into(db.pokemons).insertOnConflictUpdate(
               PokemonsCompanion.insert(
                 id: Value(pokemon.id),
                 nationalDexNumber: pokemon.number,
                 name: pokemon.name,
                 imageUrl: Value(pokemon.imageUrl),
+                speciesId: speciesId != null &&
+                    speciesName != null &&
+                    speciesName.isNotEmpty
+                    ? Value(speciesId)
+                    : const Value.absent(),
                 updatedAt: Value(DateTime.now()),
               ),
             );
@@ -169,6 +254,8 @@ class PokemonLocalRepository implements PokemonRepository {
                 (tabla) => tabla.pokemonId.equals(pokemon.id),
               ))
             .go();
+
+        // Guardar los tipos actuales.
 
         // Guardar los tipos actuales.
         for (var i = 0; i < pokemon.types.length; i++) {
@@ -189,7 +276,46 @@ class PokemonLocalRepository implements PokemonRepository {
                 ),
               );
         }
+
+        // Guardar las estadisticas una sola vez por Pokemon.
+        final stats = pokemon.baseStats;
+
+        if (stats != null) {
+          await db.into(db.pokemonStats).insertOnConflictUpdate(
+                PokemonStatsCompanion.insert(
+                  pokemonId: Value(pokemon.id),
+                  hp: stats.hp,
+                  attack: stats.attack,
+                  defense: stats.defense,
+                  specialAttack: stats.specialAttack,
+                  specialDefense: stats.specialDefense,
+                  speed: stats.speed,
+                ),
+              );
+        }
       }
     });
+  }
+
+  @override
+  Future<Pokemon?> getPokemon(int id) async {
+    final filas = await db.customSelect(
+      '''
+    $consulta
+    WHERE p.id = ?
+    ORDER BY pt.slot
+    ''',
+      variables: [
+        Variable.withInt(id),
+      ],
+    ).get();
+
+    final resultado = convertir(filas);
+
+    if (resultado.isEmpty) {
+      return null;
+    }
+
+    return resultado.first;
   }
 }

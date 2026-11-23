@@ -25,6 +25,10 @@ class PokemonDto {
   final List<PokemonTypeDto> types;
   final String? artworkUrl;
   final String? frontUrl;
+  final CatalogPokemonStatsDto? stats;
+  final int? speciesId;
+  final String? speciesName;
+  final int? generationId;
 
   const PokemonDto({
     required this.id,
@@ -32,6 +36,10 @@ class PokemonDto {
     required this.types,
     this.artworkUrl,
     this.frontUrl,
+    this.stats,
+    this.speciesId,
+    this.speciesName,
+    this.generationId,
   });
 
   factory PokemonDto.fromGraphql(GPokemonCatalogData_pokemon data) {
@@ -57,6 +65,10 @@ class PokemonDto {
       types: List.unmodifiable(types),
       artworkUrl: _cleanUrl(sprites?.artwork.value),
       frontUrl: _cleanUrl(sprites?.front.value),
+      stats: CatalogPokemonStatsDto.fromGraphql(data.stats),
+      speciesId: data.species?.id,
+      speciesName: data.species?.name,
+      generationId: data.species?.generation_id,
     );
   }
 
@@ -82,4 +94,59 @@ class PokemonTypeDto {
     required this.name,
     required this.slot,
   });
+}
+
+class CatalogPokemonStatsDto {
+  final int hp;
+  final int attack;
+  final int defense;
+  final int specialAttack;
+  final int specialDefense;
+  final int speed;
+
+  const CatalogPokemonStatsDto({
+    required this.hp,
+    required this.attack,
+    required this.defense,
+    required this.specialAttack,
+    required this.specialDefense,
+    required this.speed,
+  });
+
+  static CatalogPokemonStatsDto? fromGraphql(
+    Iterable<GPokemonCatalogData_pokemon_stats> rows,
+  ) {
+    final values = <String, int>{};
+
+    for (final row in rows) {
+      final name = row.stat?.name.trim().replaceAll('_', '-');
+
+      if (name != null) {
+        values[name] = row.base_stat;
+      }
+    }
+
+    const requiredStats = [
+      'hp',
+      'attack',
+      'defense',
+      'special-attack',
+      'special-defense',
+      'speed',
+    ];
+
+    // No guardar estadisticas parciales.
+    if (!requiredStats.every(values.containsKey)) {
+      return null;
+    }
+
+    return CatalogPokemonStatsDto(
+      hp: values['hp']!,
+      attack: values['attack']!,
+      defense: values['defense']!,
+      specialAttack: values['special-attack']!,
+      specialDefense: values['special-defense']!,
+      speed: values['speed']!,
+    );
+  }
 }

@@ -1,3 +1,4 @@
+
 query PokemonCatalog($limit: Int!, $offset: Int!) {
   pokemon(
     limit: $limit
@@ -7,6 +8,20 @@ query PokemonCatalog($limit: Int!, $offset: Int!) {
   ) {
     id
     name
+
+    species: pokemonspecy {
+      id
+      name
+      generation_id
+    }
+
+    stats: pokemonstats(order_by: { stat_id: asc }) {
+      base_stat
+      stat {
+        name
+      }
+    }
+
     pokemontypes(order_by: { slot: asc }) {
       slot
       type {
@@ -14,11 +29,13 @@ query PokemonCatalog($limit: Int!, $offset: Int!) {
         name
       }
     }
+
     pokemonsprites(limit: 1) {
       artwork: sprites(path: "other.official-artwork.front_default")
       front: sprites(path: "front_default")
     }
   }
+
   pokemon_aggregate(where: { is_default: { _eq: true } }) {
     aggregate {
       count

@@ -1,8 +1,14 @@
+import 'package:pokedex/features/pokemon/domain/pokemon_orden.dart';
+
 import 'entities.dart';
 
 abstract class PokemonRepository {
   Stream<List<Pokemon>> watchPokemon({
     String search = '',
+    int? tipoId,
+    int? generacionId,
+    OrdenPokemon orden = OrdenPokemon.numero,
+    bool ascendente = true,
   });
 
   Future<Pokemon?> getPokemon(int id);
